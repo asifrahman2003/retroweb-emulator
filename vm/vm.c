@@ -1,7 +1,10 @@
 // core instruction loop and opcode logic
-
 #include <stdio.h>
+#include <string.h>
 #include "vm.h"
+#define TEST_VM
+
+
 
 // Define memory and register storage
 unsigned char memory[MEM_SIZE] = {0};       // 1KB memory
@@ -21,59 +24,92 @@ unsigned int get_register(int index) {
 
 // Main execution loop
 void run_vm() {
+    pc = 0;
+
+    for (int i = 0; i < NUM_REGS; i++) {
+        registers[i] = 0;
+    }
+
     while (1) {
         unsigned char opcode = memory[pc];
 
+        printf("PC: %d, OPCODE: %d\n", pc, opcode);  // 🪵 Debug output
+
         if (opcode == OP_LOAD) {
-            // LOAD Rn, value
             unsigned char reg = memory[pc + 1];
             unsigned char value = memory[pc + 2];
             registers[reg] = value;
+            printf("LOAD R%d <- %d\n", reg, value);
             pc += 3;
         }
         else if (opcode == OP_ADD) {
-            // ADD Rn, Rm, Rd
-            unsigned char r1 = memory[pc + 1];
-            unsigned char r2 = memory[pc + 2];
-            unsigned char dest = memory[pc + 3];
-            registers[dest] = registers[r1] + registers[r2];
+            unsigned char dest = memory[pc + 1];
+            unsigned char src1 = memory[pc + 2];
+            unsigned char src2 = memory[pc + 3];
+            registers[dest] = registers[src1] + registers[src2];
+            printf("ADD R%d = R%d + R%d => %d\n", dest, src1, src2, registers[dest]);
             pc += 4;
         }
+        else if (opcode == OP_SUB) {
+            unsigned char dest = memory[pc + 1];
+            unsigned char src1 = memory[pc + 2];
+            unsigned char src2 = memory[pc + 3];
+            registers[dest] = registers[src1] - registers[src2];
+            printf("SUB R%d = R%d - R%d => %d\n", dest, src1, src2, registers[dest]);
+            pc += 4;
+        }
+        else if (opcode == OP_PRINT) {
+            unsigned char reg = memory[pc + 1];
+            printf("✅ PRINT R%d = %d\n", reg, registers[reg]);
+            pc += 2;
+        }
+        else if (opcode == OP_JMP) {
+            unsigned char addr = memory[pc + 1];
+            printf("JMP to %d\n", addr);
+            pc = addr;
+        }
+        else if (opcode == OP_JZ) {
+            unsigned char reg = memory[pc + 1];
+            unsigned char addr = memory[pc + 2];
+            if (registers[reg] == 0) {
+                printf("JZ: R%d == 0 → Jumping to %d\n", reg, addr);
+                pc = addr;
+            } else {
+                printf("JZ: R%d != 0 → Continuing\n", reg);
+                pc += 3;
+            }
+        }
         else if (opcode == OP_HALT) {
+            printf("🛑 HALT\n");
             break;
         }
         else {
-            printf("Unknown opcode at PC=%d: 0x%02X\n", pc, opcode);
+            printf("❌ Unknown opcode at PC=%d: 0x%02X\n", pc, opcode);
             break;
         }
     }
 }
 
+
 #ifdef TEST_VM
 
 int main() {
-    // LOAD R0, 5
-    memory[0] = OP_LOAD;
-    memory[1] = 0;
-    memory[2] = 5;
+    unsigned char test[] = {
+    1, 0, 10,      // LOAD R0, 10
+    1, 1, 1,       // LOAD R1, 1
+    3, 0, 0, 1,    // SUB R0 = R0 - R1
+    6, 0, 15,      // JZ R0, 15
+    5, 6,          // JMP 6
+    5, 0,          // PRINT R0
+    255            // HALT
+};
 
-    // LOAD R1, 7
-    memory[3] = OP_LOAD;
-    memory[4] = 1;
-    memory[5] = 7;
 
-    // ADD R0 + R1 -> R2
-    memory[6] = OP_ADD;
-    memory[7] = 0;
-    memory[8] = 1;
-    memory[9] = 2;
 
-    // HALT
-    memory[10] = OP_HALT;
+    // Copy test program into memory
+    memcpy(memory, test, sizeof(test));
 
     run_vm();
-
-    printf("R2 = %d\n", registers[2]); // Should print 12
 
     return 0;
 }

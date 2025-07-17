@@ -1,13 +1,17 @@
 #ifndef VM_H
 #define VM_H
 
-#define MEM_SIZE 1024         // 1KB memory
-#define NUM_REGS 8            // 8 registers
+#define MEM_SIZE 1024
+#define NUM_REGS 8
 
-// Opcode definitions
-#define OP_LOAD 0x01
-#define OP_ADD  0x02
-#define OP_HALT 0xFF
+// Decimal opcodes
+#define OP_LOAD 1
+#define OP_ADD  2
+#define OP_SUB  3
+#define OP_PRINT 5
+#define OP_JZ  6
+#define OP_JMP 7
+#define OP_HALT 255
 
 // Shared VM state
 extern unsigned char memory[MEM_SIZE];
