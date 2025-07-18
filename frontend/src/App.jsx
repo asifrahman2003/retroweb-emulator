@@ -1,141 +1,176 @@
 import { useEffect, useState } from 'react';
 import { loadVM } from './wasm/loadVM';
-// import reactLogo from './assets/react.svg';
-// import viteLogo from '/vite.svg';
 import { assemble } from './assembler';
-
+import Navbar from './components/Navbar';
+import MemoryViewer from './components/MemoryViewer';
+import Footer from './components/Footer';
+import { motion, AnimatePresence } from 'framer-motion';
 
 function App() {
-  const [count, setCount] = useState(0);
   const [vmInstance, setVmInstance] = useState(null);
+  const [input, setInput] = useState('');
+  const [isAssembly, setIsAssembly] = useState(true);
+  const [output, setOutput] = useState('');
+  const [easterEggActive, setEasterEggActive] = useState(false);
 
   useEffect(() => {
-    // Dynamically load the compiled WebAssembly runtime (vm.js)
     const script = document.createElement('script');
     script.src = '/vm.js';
     script.onload = async () => {
-  const Module = await loadVM();
-  console.log('✅ VM loaded');
-  setVmInstance(Module);
-};
-
+      const Module = await loadVM();
+      console.log('✅ VM loaded');
+      setVmInstance(Module);
+    };
     document.body.appendChild(script);
   }, []);
 
-const [input, setInput] = useState('');
-const [isAssembly, setIsAssembly] = useState(true);
+  const handleRunVM = () => {
+    if (input.trim().toUpperCase() === 'HALT\nHALT') {
+      setEasterEggActive(true);
+      setTimeout(() => setEasterEggActive(false), 4000);
+      return;
+    }
 
-const [output, setOutput] = useState('');
+    if (!vmInstance || typeof vmInstance._run_vm !== 'function') {
+      setOutput("❌ VM not ready.");
+      return;
+    }
 
-const handleRunVM = () => {
-  if (!vmInstance || typeof vmInstance._run_vm !== 'function') {
-    setOutput("❌ VM not ready.");
-    return;
-  }
+    const heap = vmInstance.HEAPU8 || vmInstance.HEAP8;
+    if (!heap || !heap.buffer) {
+      setOutput("❌ HEAP memory not initialized.");
+      return;
+    }
 
-  const heap = vmInstance.HEAPU8 || vmInstance.HEAP8;
-  if (!heap || !heap.buffer) {
-    setOutput("❌ HEAP memory not initialized.");
-    return;
-  }
+    let bytes = [];
+    try {
+      bytes = isAssembly
+        ? assemble(input)
+        : input.trim().split(/\s+/).map(Number);
+    } catch (e) {
+      setOutput("❌ Assembly Error: " + e.message);
+      return;
+    }
 
-  // ✅ Convert input to bytes (via assembler or manual mode)
-  let bytes = [];
-  try {
-    bytes = isAssembly
-      ? assemble(input)
-      : input.trim().split(/\s+/).map(Number);
-  } catch (e) {
-    setOutput("❌ Assembly Error: " + e.message);
-    return;
-  }
+    const memPtr = vmInstance._get_memory();
+    const heapU8 = new Uint8Array(vmInstance.HEAPU8.buffer);
+    heapU8.set(bytes, memPtr);
 
-  const memPtr = vmInstance._get_memory();
-  const heapU8 = new Uint8Array(vmInstance.HEAPU8.buffer);
-  heapU8.set(bytes, memPtr);
+    let buffer = '';
+    const oldLog = console.log;
+    console.log = (...args) => {
+      buffer += args.join(' ') + '\n';
+      oldLog(...args);
+    };
 
-  // 🧪 Debug logs
-  console.log("🧪 VM instance keys:", Object.keys(vmInstance));
-  console.log("🧾 Assembled bytecode:", bytes);
-  console.log("📌 Memory address (memPtr):", memPtr);
-  console.log("📦 Heap snapshot:", Array.from(heapU8.slice(memPtr, memPtr + bytes.length)));
+    try {
+      vmInstance._run_vm();
+      const result = vmInstance._get_register(2);
+      setOutput(`✅ R2 = ${result}`);
+    } catch (e) {
+      setOutput("❌ Runtime Error: " + e.message);
+    }
 
-  // 🔁 Capture output
-  let buffer = '';
-  const oldLog = console.log;
-  console.log = (...args) => {
-    buffer += args.join(' ') + '\n';
-    oldLog(...args);
+    console.log = oldLog;
   };
 
-  try {
-    vmInstance._run_vm();
-    const result = vmInstance._get_register(2); // ✅ Example: Show R2
-    setOutput(`✅ R2 = ${result}`);
-  } catch (e) {
-    setOutput("❌ Runtime Error: " + e.message);
-  }
-
-  console.log = oldLog;
-};
-
-
   return (
-    <main className="min-h-screen bg-gray-900 text-white flex flex-col items-center justify-center p-8 space-y-6">
-  <h1 className="text-3xl font-bold text-orange-400">🚀 RetroWeb Emulator</h1>
-<div className="text-sm text-gray-300 space-x-4">
-  <label>
-    <input
-      type="checkbox"
-      checked={isAssembly}
-      onChange={() => setIsAssembly(!isAssembly)}
-      className="mr-2"
-    />
-    Use Assembly Syntax
-  </label>
-</div>
+    <>
+      <Navbar />
+      <main className="min-h-screen w-full bg-[var(--bg)] text-white px-4 md:px-8 py-12 font-mono">
+        <h1 className="text-4xl font-bold text-orange-500 mb-8 text-center tracking-tight">
+          RetroWeb Emulator
+        </h1>
 
+        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-10">
+          {/* Editor Panel */}
+          <div className="space-y-4 bg-[var(--panel)] p-6 rounded-xl border border-white/10 shadow-lg">
+            <label htmlFor="assemblyToggle" className="flex items-center text-sm gap-2 text-gray-300">
+              <input
+                id="assemblyToggle"
+                type="checkbox"
+                checked={isAssembly}
+                onChange={() => setIsAssembly(!isAssembly)}
+              />
+              Use Assembly Syntax
+            </label>
 
-  <textarea
-    className="w-full max-w-xl h-48 p-3 rounded bg-gray-800 text-sm font-mono text-green-300 outline-none"
-    placeholder="Enter bytecode manually, e.g.\n0 0 5 0 1 7 1 0 1 2 2"
-    value={input}
-    onChange={(e) => setInput(e.target.value)}
-  />
+            <textarea
+              className="w-full h-60 p-3 rounded bg-gray-800 text-sm font-mono text-green-300 outline-none"
+              placeholder={
+                isAssembly
+                  ? "LOAD R1 5\nADD R2 R1 R1\nPRINT R2\nHALT"
+                  : "0 1 5 2 2 1 1 5 255"
+              }
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+            />
 
-  <button
-    className="bg-orange-600 hover:bg-orange-700 px-4 py-2 rounded shadow"
-    onClick={handleRunVM}
-  >
-    Run VM
-  </button>
+            <div className="flex space-x-4">
+              <button
+                className="bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white px-4 py-2 rounded-lg shadow transition"
+                onClick={handleRunVM}
+              >
+                Run VM
+              </button>
+              <button
+                className="bg-gray-800 hover:bg-gray-700 text-gray-200 px-4 py-2 rounded-lg border border-gray-600 shadow transition"
+                onClick={() => {
+                  setInput('');
+                  setOutput('');
+                }}
+              >
+                Reset
+              </button>
+            </div>
+          </div>
 
-  <pre className="w-full max-w-xl bg-black p-3 rounded text-green-400 text-sm whitespace-pre-wrap">
-  {output}
-  {vmInstance && Array.from({ length: 8 }, (_, i) =>
-    `R${i} = ${vmInstance._get_register(i)}`
-  ).join('\n')}
-</pre>
+          {/* Output & Memory */}
+          <div className="space-y-6">
+            <section className="bg-[var(--panel)] p-6 rounded-xl border border-white/10 shadow-lg">
+              <h2 className="text-lg font-semibold text-orange-300 mb-2">Output</h2>
+              <pre className="bg-black p-4 rounded text-green-400 text-sm whitespace-pre-wrap min-h-[120px]">
+                {output}
+                {vmInstance &&
+                  Array.from({ length: 8 }, (_, i) =>
+                    `\nR${i} = ${vmInstance._get_register(i)}`
+                  ).join('')}
+              </pre>
+            </section>
 
-{vmInstance && (
-  <details className="w-full max-w-xl bg-gray-800 text-green-300 p-3 rounded mt-2 text-sm">
-    <summary className="cursor-pointer">🧠 View Memory</summary>
-    <pre>
-      {Array.from(
-        new Uint8Array(vmInstance.HEAPU8.buffer).slice(
-          vmInstance._get_memory(),
-          vmInstance._get_memory() + 32
-        )
-      ).join(' ')}
-    </pre>
-  </details>
-)}
+            {vmInstance && <MemoryViewer vmInstance={vmInstance} />}
 
+            <p className="text-gray-500 text-xs mt-2">
+              VM Status: {vmInstance ? 'Ready' : 'Loading...'}
+            </p>
+          </div>
+        </div>
+      </main>
 
-  <p className="text-gray-500 text-xs">
-    WebAssembly VM Status: {vmInstance ? '✅ Loaded' : '⏳ Loading...'}
-  </p>
-</main>
+      <AnimatePresence>
+        {easterEggActive && (
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            transition={{ type: 'spring', stiffness: 200, damping: 20 }}
+          >
+            <motion.div
+  className="bg-gradient-to-r from-black via-zinc-900 to-black border border-orange-400 text-orange-300 font-mono text-base px-6 py-4 rounded-xl shadow-xl"
+  initial={{ rotate: -2 }}
+  animate={{ rotate: [2, -2, 2], transition: { repeat: Infinity, duration: 0.8 } }}
+>
+  <span className="flex items-center gap-2">
+    Debug Mode Activated — <span className="font-bold text-orange-400">RETRO CORE UNLOCKED</span>
+  </span>
+</motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <Footer />
+    </>
   );
 }
 
