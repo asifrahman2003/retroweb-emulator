@@ -46,7 +46,7 @@ export function assemble(asmCode) {
       // Determine instruction size
       if (opcode === 1) pc += 3; // LOAD
       else if (opcode === 2 || opcode === 3) pc += 4; // ADD / SUB
-      else if (opcode === 4) pc += 2; // PRINT
+      else if (opcode === 5) pc += 2; // PRINT
       else if (opcode === 6) pc += 3; // JZ
       else if (opcode === 7) pc += 2; // JMP
       else if (opcode === 255) pc += 1; // HALT

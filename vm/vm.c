@@ -95,13 +95,10 @@ void run_vm() {
 
 int main() {
     unsigned char test[] = {
-    1, 0, 10,      // LOAD R0, 10
-    1, 1, 1,       // LOAD R1, 1
-    3, 0, 0, 1,    // SUB R0 = R0 - R1
-    6, 0, 15,      // JZ R0, 15
-    5, 6,          // JMP 6
-    5, 0,          // PRINT R0
-    255            // HALT
+    1, 1, 5,      // LOAD R0, 10
+    2, 2, 1, 1,       // LOAD R1, 1
+    5, 2,   // SUB R0 = R0 - R1
+    255           // HALT
 };
 
 

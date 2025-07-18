@@ -5,6 +5,8 @@ import Navbar from './components/Navbar';
 import MemoryViewer from './components/MemoryViewer';
 import Footer from './components/Footer';
 import { motion, AnimatePresence } from 'framer-motion';
+import Editor from '@monaco-editor/react';
+
 
 function App() {
   const [vmInstance, setVmInstance] = useState(null);
@@ -14,65 +16,88 @@ function App() {
   const [easterEggActive, setEasterEggActive] = useState(false);
 
   useEffect(() => {
-    const script = document.createElement('script');
-    script.src = '/vm.js';
-    script.onload = async () => {
-      const Module = await loadVM();
-      console.log('✅ VM loaded');
-      setVmInstance(Module);
-    };
-    document.body.appendChild(script);
-  }, []);
+  const script = document.createElement('script');
+  script.src = '/vm.js';
+  script.onload = async () => {
+    const Module = await loadVM();
+    console.log('✅ VM loaded');
+    setVmInstance(Module);
+
+    // ✅ Set default code if empty
+    setInput(`LOAD R1 5\nADD R2 R1 R1\nPRINT R2\nHALT`);
+  };
+  document.body.appendChild(script);
+}, []);
 
   const handleRunVM = () => {
-    if (input.trim().toUpperCase() === 'HALT\nHALT') {
-      setEasterEggActive(true);
-      setTimeout(() => setEasterEggActive(false), 4000);
-      return;
-    }
+  if (input.trim().toUpperCase() === 'HALT\nHALT') {
+    setEasterEggActive(true);
+    setTimeout(() => setEasterEggActive(false), 4000);
+    return;
+  }
 
-    if (!vmInstance || typeof vmInstance._run_vm !== 'function') {
-      setOutput("❌ VM not ready.");
-      return;
-    }
+  if (!vmInstance || typeof vmInstance._run_vm !== 'function') {
+    setOutput("❌ VM not ready.");
+    return;
+  }
 
-    const heap = vmInstance.HEAPU8 || vmInstance.HEAP8;
-    if (!heap || !heap.buffer) {
-      setOutput("❌ HEAP memory not initialized.");
-      return;
-    }
+  const heap = vmInstance.HEAPU8 || vmInstance.HEAP8;
+  if (!heap || !heap.buffer) {
+    setOutput("❌ HEAP memory not initialized.");
+    return;
+  }
 
-    let bytes = [];
-    try {
-      bytes = isAssembly
-        ? assemble(input)
-        : input.trim().split(/\s+/).map(Number);
-    } catch (e) {
-      setOutput("❌ Assembly Error: " + e.message);
-      return;
-    }
+  let bytes = [];
+  try {
+    bytes = isAssembly
+      ? assemble(input)
+      : input.trim().split(/\s+/).map(Number);
+
+    console.log("🧠 Written Bytecode to VM memory:", bytes);
 
     const memPtr = vmInstance._get_memory();
     const heapU8 = new Uint8Array(vmInstance.HEAPU8.buffer);
+    heapU8.fill(0, memPtr, memPtr + 256);
     heapU8.set(bytes, memPtr);
+  } catch (e) {
+    setOutput("❌ Assembly Error: " + e.message);
+    return;
+  }
 
-    let buffer = '';
-    const oldLog = console.log;
-    console.log = (...args) => {
-      buffer += args.join(' ') + '\n';
-      oldLog(...args);
-    };
-
-    try {
-      vmInstance._run_vm();
-      const result = vmInstance._get_register(2);
-      setOutput(`✅ R2 = ${result}`);
-    } catch (e) {
-      setOutput("❌ Runtime Error: " + e.message);
-    }
-
-    console.log = oldLog;
+  let buffer = '';
+  const oldLog = console.log;
+  console.log = (...args) => {
+    buffer += args.join(' ') + '\n';
+    oldLog(...args);
   };
+
+  try {
+    vmInstance._run_vm();
+  } catch (e) {
+    console.log = oldLog;
+    setOutput("❌ Runtime Error: " + e.message);
+    return;
+  }
+
+  console.log = oldLog;
+
+  const registerDump = Array.from({ length: 8 }, (_, i) =>
+    `R${i} = ${vmInstance._get_register(i)}`
+  ).join('\n');
+
+  const cleanedBuffer = buffer.trim();
+  const finalOutput = cleanedBuffer
+    ? `${cleanedBuffer}\n\n${registerDump}`
+    : registerDump;
+
+  setOutput(finalOutput);
+};
+
+
+
+
+
+
 
   return (
     <>
@@ -95,16 +120,24 @@ function App() {
               Use Assembly Syntax
             </label>
 
-            <textarea
-              className="w-full h-60 p-3 rounded bg-gray-800 text-sm font-mono text-green-300 outline-none"
-              placeholder={
-                isAssembly
-                  ? "LOAD R1 5\nADD R2 R1 R1\nPRINT R2\nHALT"
-                  : "0 1 5 2 2 1 1 5 255"
-              }
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-            />
+            <Editor
+  height="240px"
+  defaultLanguage="plaintext"
+  defaultValue={isAssembly
+    ? "LOAD R1 5\nADD R2 R1 R1\nPRINT R2\nHALT"
+    : "0 1 5 2 2 1 1 5 255"}
+  value={input}
+  onChange={(value) => setInput(value || "")}
+  theme="vs-dark"
+  options={{
+    fontSize: 14,
+    fontFamily: 'monospace',
+    minimap: { enabled: false },
+    lineNumbers: "on",
+    scrollBeyondLastLine: false,
+    wordWrap: "on",
+  }}
+/>
 
             <div className="flex space-x-4">
               <button
@@ -130,12 +163,8 @@ function App() {
             <section className="bg-[var(--panel)] p-6 rounded-xl border border-white/10 shadow-lg">
               <h2 className="text-lg font-semibold text-orange-300 mb-2">Output</h2>
               <pre className="bg-black p-4 rounded text-green-400 text-sm whitespace-pre-wrap min-h-[120px]">
-                {output}
-                {vmInstance &&
-                  Array.from({ length: 8 }, (_, i) =>
-                    `\nR${i} = ${vmInstance._get_register(i)}`
-                  ).join('')}
-              </pre>
+  {output}
+</pre>
             </section>
 
             {vmInstance && <MemoryViewer vmInstance={vmInstance} />}
