@@ -94,4 +94,8 @@ Compiled native C code to WebAssembly and connected it with a modern React front
 
 Made low-level computing concepts interactive, visual, and browser-based.
 
-Focused on education, experimentation, and systems design — great for showcasing full-stack CS skills.
+Focused on education, experimentation, and systems design. 
+
+## Developer
+
+Ⓒ Asifur Rahman. Licensed under MIT License. 
