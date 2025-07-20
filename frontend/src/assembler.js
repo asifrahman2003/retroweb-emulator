@@ -1,88 +1,119 @@
 // frontend/src/assembler.js
 
 export const opcodeMap = {
-  LOAD: 1,
-  ADD: 2,
-  SUB: 3,
+  LOAD:  1,
+  ADD:   2,
+  SUB:   3,
   PRINT: 5,
-  JZ: 6,
-  JMP: 7,
+  JZ:    6,
+  JMP:   7,
+  PIX:   8,   // draw with immediate x,y,color
+  PIXR:  9,   // draw with register x,y,color
   HALT: 255,
 };
 
-// Helper functions
-function parseRegister(token) {
-  if (!/^R\d$/.test(token.toUpperCase())) {
-    throw new Error(`Invalid register: ${token}`);
+function parseRegister(tok) {
+  const t = tok.toUpperCase();
+  if (!/^R[0-7]$/.test(t)) {
+    throw new Error(`Invalid register: ${tok}`);
   }
-  return Number(token.slice(1));
+  return Number(t.slice(1));
 }
 
-function parseValue(token, labels) {
-  if (/^\d+$/.test(token)) return Number(token);
-  const label = token.toUpperCase();
+function parseValue(tok, labels) {
+  if (/^\d+$/.test(tok)) return Number(tok);
+  const label = tok.toUpperCase();
   if (!(label in labels)) throw new Error(`Unknown label: ${label}`);
   return labels[label];
 }
 
 export function assemble(asmCode) {
-  const lines = asmCode.trim().split('\n').map(line => line.trim());
+  const lines = asmCode
+    .split('\n')
+    .map(l => l.replace(/\/\/.*$/, '').trim())  // strip comments
+    .filter(l => l.length);
+
   const labels = {};
-  const bytecode = [];
-
-  // --- PASS 1: Find labels and assign PC values ---
   let pc = 0;
-  for (let line of lines) {
-    if (line === '' || line.startsWith('//')) continue;
 
+  // PASS 1: record label → PC
+  for (const line of lines) {
     if (line.endsWith(':')) {
-      const label = line.slice(0, -1).toUpperCase();
-      labels[label] = pc;
+      labels[line.slice(0, -1).toUpperCase()] = pc;
     } else {
-      const [op] = line.split(/\s+/);
-      const opcode = opcodeMap[op.toUpperCase()];
-      if (opcode === undefined) throw new Error(`Unknown opcode: ${op}`);
+      const op = line.split(/\s+/)[0].toUpperCase();
+      const code = opcodeMap[op];
+      if (code == null) throw new Error(`Unknown opcode: ${op}`);
 
-      // Determine instruction size
-      if (opcode === 1) pc += 3; // LOAD
-      else if (opcode === 2 || opcode === 3) pc += 4; // ADD / SUB
-      else if (opcode === 5) pc += 2; // PRINT
-      else if (opcode === 6) pc += 3; // JZ
-      else if (opcode === 7) pc += 2; // JMP
-      else if (opcode === 255) pc += 1; // HALT
+      // instruction size
+      if (code === opcodeMap.LOAD)           pc += 3;
+      else if (code === opcodeMap.ADD ||
+               code === opcodeMap.SUB)       pc += 4;
+      else if (code === opcodeMap.PRINT)     pc += 2;
+      else if (code === opcodeMap.JZ)        pc += 3;
+      else if (code === opcodeMap.JMP)       pc += 2;
+      else if (code === opcodeMap.PIX)       pc += 4;
+      else if (code === opcodeMap.PIXR)      pc += 4;
+      else if (code === opcodeMap.HALT)      pc += 1;
+      else throw new Error(`Unhandled opcode size: ${op}`);
     }
   }
 
-  // --- PASS 2: Generate bytecode with label resolution ---
-  for (let line of lines) {
-    if (line === '' || line.startsWith('//') || line.endsWith(':')) continue;
-
+  // PASS 2: emit bytecode
+  const bytecode = [];
+  for (const line of lines) {
+    if (line.endsWith(':')) continue;
     const parts = line.split(/\s+/);
     const op = parts[0].toUpperCase();
-    const opcode = opcodeMap[op];
-    if (opcode === undefined) throw new Error(`Unknown opcode: ${op}`);
+    const code = opcodeMap[op];
+    bytecode.push(code);
 
-    bytecode.push(opcode);
+    switch (code) {
+      case opcodeMap.LOAD:
+        bytecode.push(parseRegister(parts[1]));
+        bytecode.push(parseValue(parts[2], labels));
+        break;
 
-    if (opcode === 1) {
-      // LOAD Rn val
-      bytecode.push(parseRegister(parts[1]));
-      bytecode.push(parseValue(parts[2], labels));
-        } else if (opcode === 2 || opcode === 3) {
-      // ADD / SUB dest src1 src2
-      bytecode.push(parseRegister(parts[1])); // dest
-      bytecode.push(parseRegister(parts[2])); // src1
-      bytecode.push(parseRegister(parts[3])); // src2
-    } else if (opcode === 5) {
-      // PRINT Rn
-      bytecode.push(parseRegister(parts[1]));
-    } else if (opcode === 6) {
-      // JZ Rn label
-      bytecode.push(parseRegister(parts[1]));
-      bytecode.push(parseValue(parts[2], labels));
-    } else if (opcode === 7) {
-      // JMP label
-      bytecode.push(parseValue(parts[1], labels));
+      case opcodeMap.ADD:
+      case opcodeMap.SUB:
+        bytecode.push(parseRegister(parts[1]));
+        bytecode.push(parseRegister(parts[2]));
+        bytecode.push(parseRegister(parts[3]));
+        break;
+
+      case opcodeMap.PRINT:
+        bytecode.push(parseRegister(parts[1]));
+        break;
+
+      case opcodeMap.JZ:
+        bytecode.push(parseRegister(parts[1]));
+        bytecode.push(parseValue(parts[2], labels));
+        break;
+
+      case opcodeMap.JMP:
+        bytecode.push(parseValue(parts[1], labels));
+        break;
+
+      case opcodeMap.PIX:
+        // PIX x y color (all immediates)
+        bytecode.push(parseValue(parts[1], labels));
+        bytecode.push(parseValue(parts[2], labels));
+        bytecode.push(parseValue(parts[3], labels));
+        break;
+
+      case opcodeMap.PIXR:
+        // PIXR Rx Ry Rc (all registers)
+        bytecode.push(parseRegister(parts[1]));
+        bytecode.push(parseRegister(parts[2]));
+        bytecode.push(parseRegister(parts[3]));
+        break;
+
+      case opcodeMap.HALT:
+        // no operands
+        break;
+
+      default:
+        throw new Error(`Unhandled opcode in assembler: ${code}`);
     }
   }
 

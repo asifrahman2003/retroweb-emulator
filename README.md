@@ -11,7 +11,7 @@ RetroWeb Emulator is a web-based interactive emulator built from scratch, featur
 
 - Supports a basic instruction set: LOAD, ADD, SUB, PRINT, HALT.
 
-- 8 General Purpose Registers (R0–R7).
+- 8 General Purpose Registers (R0– R7).
 
 - Memory-mapped architecture to simulate instruction loading.
 

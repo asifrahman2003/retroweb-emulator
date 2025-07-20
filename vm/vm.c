@@ -1,114 +1,144 @@
-// core instruction loop and opcode logic
+// vm.c
 #include <stdio.h>
 #include <string.h>
 #include "vm.h"
-#define TEST_VM
 
+unsigned char memory[MEM_SIZE]     = {0};
+unsigned int  registers[NUM_REGS]  = {0};
+unsigned int  pc                   = 0;
 
-
-// Define memory and register storage
-unsigned char memory[MEM_SIZE] = {0};       // 1KB memory
-unsigned int registers[NUM_REGS] = {0};     // 8 general-purpose registers
-unsigned int pc = 0;                         // Program counter
-
-// Expose pointer to memory[] for JS to write bytecode
-unsigned char* get_memory() {
+unsigned char* get_memory(void) {
     return memory;
 }
 
-// Get value of a register (to expose to JS)
 unsigned int get_register(int index) {
     return registers[index];
 }
 
-
-// Main execution loop
-void run_vm() {
-    pc = 0;
-
+void print_registers(void) {
     for (int i = 0; i < NUM_REGS; i++) {
-        registers[i] = 0;
+        printf("R%d = %u\n", i, registers[i]);
     }
+}
+
+void run_vm(void) {
+    pc = 0;
+    memset(registers, 0, sizeof(registers));
 
     while (1) {
         unsigned char opcode = memory[pc];
+        printf("PC: %u, OPCODE: %u\n", pc, opcode);
 
-        printf("PC: %d, OPCODE: %d\n", pc, opcode);  // 🪵 Debug output
+        switch (opcode) {
 
-        if (opcode == OP_LOAD) {
-            unsigned char reg = memory[pc + 1];
-            unsigned char value = memory[pc + 2];
-            registers[reg] = value;
-            printf("LOAD R%d <- %d\n", reg, value);
+          case OP_LOAD: {
+            unsigned char r = memory[pc+1];
+            unsigned char v = memory[pc+2];
+            registers[r] = v;
+            printf("LOAD R%u <- %u\n", r, v);
             pc += 3;
-        }
-        else if (opcode == OP_ADD) {
-            unsigned char dest = memory[pc + 1];
-            unsigned char src1 = memory[pc + 2];
-            unsigned char src2 = memory[pc + 3];
-            registers[dest] = registers[src1] + registers[src2];
-            printf("ADD R%d = R%d + R%d => %d\n", dest, src1, src2, registers[dest]);
+            break;
+          }
+
+          case OP_ADD: {
+            unsigned char d = memory[pc+1],
+                          a = memory[pc+2],
+                          b = memory[pc+3];
+            registers[d] = registers[a] + registers[b];
+            printf("ADD R%u = R%u + R%u => %u\n", d, a, b, registers[d]);
             pc += 4;
-        }
-        else if (opcode == OP_SUB) {
-            unsigned char dest = memory[pc + 1];
-            unsigned char src1 = memory[pc + 2];
-            unsigned char src2 = memory[pc + 3];
-            registers[dest] = registers[src1] - registers[src2];
-            printf("SUB R%d = R%d - R%d => %d\n", dest, src1, src2, registers[dest]);
+            break;
+          }
+
+          case OP_SUB: {
+            unsigned char d = memory[pc+1],
+                          a = memory[pc+2],
+                          b = memory[pc+3];
+            registers[d] = registers[a] - registers[b];
+            printf("SUB R%u = R%u - R%u => %u\n", d, a, b, registers[d]);
             pc += 4;
-        }
-        else if (opcode == OP_PRINT) {
-            unsigned char reg = memory[pc + 1];
-            printf("✅ PRINT R%d = %d\n", reg, registers[reg]);
+            break;
+          }
+
+          case OP_PRINT: {
+            unsigned char r = memory[pc+1];
+            printf("PRINT R%u = %u\n", r, registers[r]);
             pc += 2;
-        }
-        else if (opcode == OP_JMP) {
-            unsigned char addr = memory[pc + 1];
-            printf("JMP to %d\n", addr);
-            pc = addr;
-        }
-        else if (opcode == OP_JZ) {
-            unsigned char reg = memory[pc + 1];
-            unsigned char addr = memory[pc + 2];
-            if (registers[reg] == 0) {
-                printf("JZ: R%d == 0 → Jumping to %d\n", reg, addr);
-                pc = addr;
+            break;
+          }
+
+          case OP_JZ: {
+            unsigned char r = memory[pc+1];
+            unsigned char addr = memory[pc+2];
+            if (registers[r] == 0) {
+              printf("JZ: R%u == 0 → Jump to %u\n", r, addr);
+              pc = addr;
             } else {
-                printf("JZ: R%d != 0 → Continuing\n", reg);
-                pc += 3;
+              printf("JZ: R%u != 0 → continue\n", r);
+              pc += 3;
             }
-        }
-        else if (opcode == OP_HALT) {
+            break;
+          }
+
+          case OP_JMP: {
+            unsigned char addr = memory[pc+1];
+            printf("JMP to %u\n", addr);
+            pc = addr;
+            break;
+          }
+
+          case OP_PIX: {
+            // immediate x, y, color
+            unsigned char x = memory[pc+1];
+            unsigned char y = memory[pc+2];
+            unsigned char c = memory[pc+3];
+            if (x < SCREEN_WIDTH && y < SCREEN_HEIGHT) {
+              memory[FRAMEBUFFER_START + y*SCREEN_WIDTH + x] = c;
+            }
+            printf("PIX → (%u,%u)=color %u\n", x, y, c);
+            pc += 4;
+            break;
+          }
+
+          case OP_PIXR: {
+            // register x, register y, register color
+            unsigned char rx = memory[pc+1];
+            unsigned char ry = memory[pc+2];
+            unsigned char rc = memory[pc+3];
+            unsigned int  x  = registers[rx];
+            unsigned int  y  = registers[ry];
+            unsigned int  c  = registers[rc];
+            if (x < SCREEN_WIDTH && y < SCREEN_HEIGHT) {
+              memory[FRAMEBUFFER_START + y*SCREEN_WIDTH + x] = c;
+            }
+            printf("PIXR R%u,R%u,R%u → (%u,%u)=color %u\n",
+                   rx, ry, rc, x, y, c);
+            pc += 4;
+            break;
+          }
+
+          case OP_HALT:
             printf("🛑 HALT\n");
-            break;
-        }
-        else {
-            printf("❌ Unknown opcode at PC=%d: 0x%02X\n", pc, opcode);
-            break;
+            return;
+
+          default:
+            printf("❌ Unknown opcode at PC=%u: 0x%02X\n", pc, opcode);
+            return;
         }
     }
 }
 
-
 #ifdef TEST_VM
-
 int main() {
-    unsigned char test[] = {
-    1, 1, 5,      // LOAD R0, 10
-    2, 2, 1, 1,       // LOAD R1, 1
-    5, 2,   // SUB R0 = R0 - R1
-    255           // HALT
-};
-
-
-
-    // Copy test program into memory
-    memcpy(memory, test, sizeof(test));
-
+    // A quick smoke test for the immediate-PIX opcode
+    unsigned char program[] = {
+      OP_PIX,  2, 3, 7,
+      OP_HALT
+    };
+    memcpy(memory, program, sizeof(program));
     run_vm();
-
+    unsigned int idx = FRAMEBUFFER_START + 3*SCREEN_WIDTH + 2;
+    printf("Framebuffer[3][2] = %u (expect 7)\n", memory[idx]);
     return 0;
 }
-
 #endif
