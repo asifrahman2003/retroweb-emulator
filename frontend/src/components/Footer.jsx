@@ -65,7 +65,7 @@ export default function Footer() {
     </div>
 
 
-      <p className="text-xs mt-2 text-gray-600 italic hover:text-pink-400 transition duration-300 font-mono">
+      <p className="text-xs mt-3 text-gray-600 italic hover:text-pink-400 transition duration-300 font-mono">
         {`<psst> try typing HALT twice 👀`}
       </p>
     </footer>

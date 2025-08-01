@@ -30,7 +30,7 @@ export default function Navbar() {
     <nav
       className="
         fixed top-0 left-0 right-0 z-50
-        px-4 py-3 md:px-12 md:py-3
+        px-4 py-3 md:px-14 md:py-3
         flex justify-between items-center
         backdrop-blur-md border-b
       "

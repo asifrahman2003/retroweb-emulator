@@ -106,9 +106,12 @@ function App() {
 
       <main className="pt-16 md:pt-20 min-h-screen bg-[var(--bg)] text-[var(--text-main)] px-4 md:px-8 pb-12 font-mono">
         {/* Title */}
-        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-10 mt-6 text-center text-[var(--heading-color)]">
-          retroWeb Emulator
-        </h1>
+        <div className="text-center mb-10 mt-8">
+  <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[var(--heading-color)]">
+    retroWeb Emulator
+  </h1>
+  <span className="inline-block w-25 h-1 bg-[var(--accent)] animate-pulse rounded-sm"></span>
+</div>
 
         <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-10">
           {/* Left Panel → Code Editor */}
