@@ -235,7 +235,7 @@ function App() {
 
             <p
   className="text-xs text-[var(--accent)] mt-2 
-             text-center sm:text-left px-4"
+             text-center sm:text-left px-4 animate-pulse"
 >
   VM Status: {vmInstance ? 'Ready' : 'Loading...'}
 </p>
