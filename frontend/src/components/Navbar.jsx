@@ -11,8 +11,8 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="font-mono w-full px-6 py-4 flex justify-between items-center backdrop-blur-md bg-black/30 border-b border-white/10">
-      <h1 className="text-xl font-bold text-orange-400">RetroWeb Emulator</h1>
+    <nav className="font-mono w-full px-10 py-4 flex justify-between items-center backdrop-blur-md bg-black/30 border-b border-white/10">
+      <h1 className="text-xl font-bold text-orange-400">RetroWeb</h1>
       <div className="flex items-center gap-4 text-sm text-gray-300">
         <a
           href="https://github.com/asifrahman2003/retroweb-emulator"

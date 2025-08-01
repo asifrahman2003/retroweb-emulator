@@ -34,7 +34,7 @@ export default function Footer() {
           <FaLinkedin size={20} />
         </a>
         <span className="bg-gray-700 text-gray-300 px-2 py-0.7 text-xs font-mono rounded-full flex">
-          v0.1 Beta
+          v0.1 Alpha
         </span>
       </div>
 
