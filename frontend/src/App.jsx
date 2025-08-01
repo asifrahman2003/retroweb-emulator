@@ -11,6 +11,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Editor from '@monaco-editor/react';
 import { askGPT } from './askGPT';
 import MacWindow from './components/MacWindow';
+import About from './components/About';
 
 function App() {
   const [vmInstance, setVmInstance] = useState(null);
@@ -52,8 +53,6 @@ function App() {
       setOutput('❌ VM not ready.');
       return;
     }
-
-    // Easter egg trigger
     if (input.trim().toUpperCase() === 'HALT\nHALT') {
       setEasterEggActive(true);
       setTimeout(() => setEasterEggActive(false), 4000);
@@ -105,16 +104,16 @@ function App() {
     <>
       <Navbar />
 
-      <main className="min-h-screen bg-[var(--bg)] text-white px-4 md:px-8 py-12 font-mono">
-        <h1 className="text-4xl font-bold text-orange-500 mb-8 text-center">
+      <main className="pt-16 md:pt-20 min-h-screen bg-[var(--bg)] text-[var(--text-main)] px-4 md:px-8 pb-12 font-mono">
+        {/* Title */}
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-10 mt-6 text-center text-[var(--heading-color)]">
           retroWeb Emulator
         </h1>
 
         <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-10">
-
-          {/* Left Panel → Code Editor Window */}
+          {/* Left Panel → Code Editor */}
           <MacWindow title="Code Editor">
-            <label className="flex items-center text-gray-300 gap-2 text-sm mb-2">
+            <label className="flex items-center text-[var(--text-muted)] gap-2 text-sm mb-2">
               <input
                 type="checkbox"
                 checked={isAssembly}
@@ -143,8 +142,8 @@ function App() {
                 readOnly: !isAssembly,
                 ariaLabel: 'Assembly Code Editor',
                 placeholder: isAssembly
-                  ? 'Enter your program using custom Assembly (e.g., LOAD R1 5)...'
-                  : 'Enter raw byte values (e.g., 1 17 5 2 18 17 17 3 18 7)',
+                  ? 'Enter custom Assembly (e.g., LOAD R1 5)...'
+                  : 'Enter raw bytes (e.g., 1 17 5 2 18 17 17 3 18 7)',
               }}
             />
 
@@ -152,7 +151,7 @@ function App() {
             <div className="mt-4">
               <input
                 type="text"
-                className="w-full px-3 py-2 text-sm text-white rounded"
+                className="w-full px-3 py-2 text-sm rounded bg-[var(--panel)] text-[var(--text-main)]"
                 placeholder="Ask AI: e.g., load and print a number"
                 value={aiPrompt}
                 onChange={e => setAiPrompt(e.target.value)}
@@ -164,7 +163,7 @@ function App() {
                   );
                   setInput(resp);
                 }}
-                className="mt-2 bg-sky-600 hover:bg-sky-700 text-white px-4 py-2 rounded w-full transition"
+                className="mt-2 w-full py-2 rounded bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white transition"
               >
                 Generate with GPT
               </button>
@@ -172,7 +171,7 @@ function App() {
 
             {/* Debug Controls */}
             {vmInstance && editor && monaco && (
-              <div className="mt-4">
+              <div className="mt-4 rounded-xl border border-[var(--accent)] bg-[var(--panel)] p-4">
                 <DebugControls
                   vmInstance={vmInstance}
                   editor={editor}
@@ -183,17 +182,20 @@ function App() {
               </div>
             )}
 
-            {/* Run & Clear Buttons */}
+            {/* Run & Clear */}
             <div className="flex gap-4 mt-4">
               <button
                 onClick={handleRunVM}
-                className="flex-1 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white py-2 rounded-lg shadow transition"
+                className="flex-1 py-2 rounded bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white transition"
               >
-                Run VM
+                ⏵ Run VM
               </button>
               <button
-                onClick={() => { setInput(''); setOutput(''); }}
-                className="flex-1 bg-gray-800 hover:bg-gray-700 text-gray-200 py-2 rounded-lg border border-gray-600 shadow transition"
+                onClick={() => {
+                  setInput('');
+                  setOutput('');
+                }}
+                className="flex-1 py-2 rounded bg-[var(--panel)] border border-[var(--panel-border)] text-[var(--text-main)] transition"
               >
                 Clear Code
               </button>
@@ -202,14 +204,25 @@ function App() {
 
           {/* Right Panel */}
           <div className="space-y-6">
-            {/* Output Window */}
             <MacWindow title="Output">
-              <pre className="bg-black p-4 rounded text-green-400 text-sm whitespace-pre-wrap min-h-[120px]">
-                {output}
-              </pre>
+              <div className="rounded-xl border border-[var(--accent)] overflow-hidden">
+                {/* Inner title bar */}
+                <div
+                  className="px-3 py-1 text-xs font-mono"
+                  style={{
+                    backgroundColor: 'var(--window-header-bg)',
+                    color: 'var(--window-title-text)',
+                  }}
+                >
+                  Console dump
+                </div>
+                {/* Inner content */}
+                <pre className="bg-[var(--output-bg)] p-4 text-[var(--accent)] text-sm whitespace-pre-wrap min-h-[120px]">
+                  {output}
+                </pre>
+              </div>
             </MacWindow>
 
-            {/* Memory & Canvas (wrapped internally) */}
             {vmInstance && (
               <MemoryViewer vmInstance={vmInstance} version={runCount} />
             )}
@@ -217,7 +230,7 @@ function App() {
               <CanvasOutput vmInstance={vmInstance} drawTrigger={runCount} />
             )}
 
-            <p className="text-orange-400 text-xs mt-2">
+            <p className="text-xs text-[var(--accent)] mt-2">
               VM Status: {vmInstance ? 'Ready' : 'Loading...'}
             </p>
           </div>
@@ -234,18 +247,20 @@ function App() {
             transition={{ type: 'spring', stiffness: 200, damping: 20 }}
           >
             <motion.div
-              className="bg-gradient-to-r from-black via-zinc-900 to-black border border-orange-400 text-orange-300 font-mono px-6 py-4 rounded-xl shadow-xl"
+              className="bg-gradient-to-r from-black via-zinc-900 to-black border border-[var(--accent)] text-[var(--text-main)] font-mono px-6 py-4 rounded-xl shadow-xl"
               initial={{ rotate: -2 }}
               animate={{ rotate: [2, -2, 2], repeat: Infinity, duration: 0.8 }}
             >
               Debug Mode Activated —{' '}
-              <span className="font-bold text-orange-400">
+              <span className="font-bold text-[var(--accent)]">
                 RETRO CORE UNLOCKED
               </span>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
+
+      <About />
 
       <Footer />
     </>
