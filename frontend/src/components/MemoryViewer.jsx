@@ -1,5 +1,6 @@
 // src/components/MemoryViewer.jsx
 import { useState, useEffect } from 'react';
+import MacWindow from './MacWindow';
 
 export default function MemoryViewer({ vmInstance, version, highlightAddr = null }) {
   const [showFull, setShowFull] = useState(false);
@@ -12,14 +13,15 @@ export default function MemoryViewer({ vmInstance, version, highlightAddr = null
   const bytesPerRow = 8;
 
   useEffect(() => {
+    // capture a fresh slice of memory whenever vmInstance, showFull, or version changes
     const slice = heap.slice(memoryStart, memoryStart + bytesToShow);
-    setPrevMemory(memorySlice);       // save old
-    setMemorySlice(slice);            // update to new
-  }, [vmInstance, showFull, version]); // ← now depends on version too
+    setPrevMemory(memorySlice);
+    setMemorySlice(slice);
+  }, [vmInstance, showFull, version]); 
 
   const getByteClass = (byte, addr, i) => {
     const changed = prevMemory[i] !== undefined && prevMemory[i] !== byte;
-    const isPC    = addr === vmInstance._get_register(15); // or whatever your PC register index is
+    const isPC    = addr === vmInstance._get_register(15);
     if (isPC)    return 'bg-yellow-500 text-black font-bold';
     if (changed) return 'bg-blue-800 text-blue-100 font-semibold';
     if (byte !== 0) return 'bg-green-900 text-green-100';
@@ -27,9 +29,9 @@ export default function MemoryViewer({ vmInstance, version, highlightAddr = null
   };
 
   return (
-    <section className="bg-[var(--panel)] p-6 rounded-xl border border-white/10 shadow-lg">
-      <div className="flex justify-between items-center mb-2">
-        <h2 className="text-lg font-semibold text-orange-300">Memory</h2>
+    <MacWindow title="Memory">
+      {/* header with toggle */}
+      <div className="flex justify-end items-center mb-2">
         <button
           className="text-xs text-blue-400 hover:text-blue-300"
           onClick={() => setShowFull(f => !f)}
@@ -37,6 +39,8 @@ export default function MemoryViewer({ vmInstance, version, highlightAddr = null
           {showFull ? 'Show Less' : 'Show More'}
         </button>
       </div>
+
+      {/* memory grid */}
       <div className="bg-gray-800 p-4 rounded text-sm max-h-64 overflow-y-auto font-mono space-y-1">
         {Array.from({ length: Math.ceil(memorySlice.length / bytesPerRow) }, (_, rowIndex) => {
           const startAddr = rowIndex * bytesPerRow;
@@ -64,6 +68,6 @@ export default function MemoryViewer({ vmInstance, version, highlightAddr = null
           );
         })}
       </div>
-    </section>
+    </MacWindow>
   );
 }

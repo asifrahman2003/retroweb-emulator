@@ -1,6 +1,12 @@
-// vm.h
 #ifndef VM_H
 #define VM_H
+
+#if defined(__EMSCRIPTEN__)
+  #include <emscripten/emscripten.h>
+#else
+  // Stub out the macro so IntelliSense (and non-EMCC builds) are happy
+  #define EMSCRIPTEN_KEEPALIVE
+#endif  // for EMSCRIPTEN_KEEPALIVE
 
 // screen is 32×32 = 1024 pixels
 #define SCREEN_WIDTH     32
@@ -28,9 +34,16 @@ extern unsigned char memory[MEM_SIZE];
 extern unsigned int  registers[NUM_REGS];
 extern unsigned int  pc;
 
-void run_vm(void);
+// Core batch API
+void           run_vm(void);
 unsigned char* get_memory(void);
-unsigned int   get_register(int index);
+unsigned int   get_register(unsigned int index);
 void           print_registers(void);
 
+// ==== New single-step / debug API ====
+EMSCRIPTEN_KEEPALIVE void         step_vm(void);
+EMSCRIPTEN_KEEPALIVE unsigned int get_pc(void);
+EMSCRIPTEN_KEEPALIVE void         reset_vm(void);
+
 #endif // VM_H
+// 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

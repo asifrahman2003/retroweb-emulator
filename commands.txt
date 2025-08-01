@@ -1,0 +1,4 @@
+(base) asifrahman@Muhammad-Asifs-MacBook-Pro vm % ./build.sh
+(base) asifrahman@Muhammad-Asifs-MacBook-Pro vm % mv vm.wasm ../frontend/public/
+(base) asifrahman@Muhammad-Asifs-MacBook-Pro vm % mv vm.js ../frontend/public/
+(base) asifrahman@Muhammad-Asifs-MacBook-Pro vm % 

@@ -3,6 +3,8 @@
 ## Project Title: RetroWeb Emulator
 RetroWeb Emulator is a web-based interactive emulator built from scratch, featuring a custom virtual machine (VM) and a MIPS-inspired assembly-like instruction set. It serves as an educational sandbox that makes low-level systems programming accessible in the browser, with a modern React frontend and WebAssembly backend.
 
+## Website link - [retroweb-emulator.vercel.app](https://retroweb-emulator.vercel.app/)
+
 ## What We've Built So Far
 
 ### Custom Virtual Machine (VM):

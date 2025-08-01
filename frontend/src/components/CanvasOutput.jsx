@@ -1,4 +1,6 @@
+// src/components/CanvasOutput.jsx
 import { useEffect, useRef } from 'react';
+import MacWindow from './MacWindow';
 
 const SCREEN_WIDTH      = 32;
 const SCREEN_HEIGHT     = 32;
@@ -33,19 +35,19 @@ export default function CanvasOutput({ vmInstance, drawTrigger }) {
         ctx.fillRect(x * SCALE, y * SCALE, SCALE, SCALE);
       }
     }
-  }, [vmInstance, drawTrigger]); // ← redraw whenever drawTrigger changes
+  }, [vmInstance, drawTrigger]);
 
   return (
-    <div>
-      <h2 className="text-lg font-semibold text-orange-300 mb-2">
-        Canvas Output
-      </h2>
-      <canvas
+    <MacWindow title="Canvas">
+      <div className='flex justify-center'>
+        <canvas
         ref={canvasRef}
         width={SCREEN_WIDTH * SCALE}
         height={SCREEN_HEIGHT * SCALE}
         className="border border-orange-500 rounded shadow"
       />
-    </div>
+      </div>
+      
+    </MacWindow>
   );
 }

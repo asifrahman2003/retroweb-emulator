@@ -10,6 +10,7 @@ import Footer from './components/Footer';
 import { motion, AnimatePresence } from 'framer-motion';
 import Editor from '@monaco-editor/react';
 import { askGPT } from './askGPT';
+import MacWindow from './components/MacWindow';
 
 function App() {
   const [vmInstance, setVmInstance] = useState(null);
@@ -23,7 +24,6 @@ function App() {
   const [monaco, setMonaco] = useState(null);
   const [sourceMap, setSourceMap] = useState({});
   const [aiPrompt, setAiPrompt] = useState('');
-
 
   useEffect(() => {
     const script = document.createElement('script');
@@ -53,6 +53,7 @@ function App() {
       return;
     }
 
+    // Easter egg trigger
     if (input.trim().toUpperCase() === 'HALT\nHALT') {
       setEasterEggActive(true);
       setTimeout(() => setEasterEggActive(false), 4000);
@@ -103,6 +104,7 @@ function App() {
   return (
     <>
       <Navbar />
+
       <main className="min-h-screen bg-[var(--bg)] text-white px-4 md:px-8 py-12 font-mono">
         <h1 className="text-4xl font-bold text-orange-500 mb-8 text-center">
           retroWeb Emulator
@@ -110,75 +112,79 @@ function App() {
 
         <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-10">
 
-          {/* Left Panel */}
-          <div className="flex flex-col gap-6 bg-[var(--panel)] p-6 rounded-xl border border-white/10 shadow-lg">
-            <div>
-              <label className="flex items-center text-gray-300 gap-2 text-sm mb-2">
-                <input
-                  type="checkbox"
-                  checked={isAssembly}
-                  onChange={() => setIsAssembly(a => !a)}
-                />
-                Use Assembly Syntax
-              </label>
-              <Editor
-                height="240px"
-                defaultLanguage="plaintext"
-                value={input}
-                onChange={(v) => setInput(v || '')}
-                onMount={(ed, mon) => {
-                  setEditor(ed);
-                  setMonaco(mon);
-                }}
-                theme="vs-dark"
-                options={{
-                  fontSize: 14,
-                  fontFamily: 'monospace',
-                  minimap: { enabled: false },
-                  lineNumbers: 'on',
-                  scrollBeyondLastLine: false,
-                  wordWrap: 'on',
-                  readOnly: !isAssembly,
-                  ariaLabel: 'Assembly Code Editor',
-                  placeholder: isAssembly
-                    ? 'Enter your program using custom Assembly \n (e.g., LOAD R1 5)...'
-                    : 'Enter raw byte values separated by spaces \n (e.g., 1 17 5 2 18 17 17 3 18 7)',
-                }}
+          {/* Left Panel → Code Editor Window */}
+          <MacWindow title="Code Editor">
+            <label className="flex items-center text-gray-300 gap-2 text-sm mb-2">
+              <input
+                type="checkbox"
+                checked={isAssembly}
+                onChange={() => setIsAssembly(a => !a)}
               />
-              {/* AI Assistant Input */}
-<div className="mt-4">
-  <input
-    type="text"
-    className="w-full px-3 py-2 text-sm text-white rounded"
-    placeholder="Ask AI: e.g., load and print a number"
-    value={aiPrompt}
-    onChange={(e) => setAiPrompt(e.target.value)}
-  />
-  <button
-    onClick={async () => {
-      const response = await askGPT(
-        `Convert this idea into assembly for a custom VM:\n\n${aiPrompt}`
-      );
-      setInput(response);
-    }}
-    className="mt-2 bg-sky-600 hover:bg-sky-700 text-white px-4 py-2 rounded transition w-full"
-  >
-    Generate with GPT
-  </button>
-</div>
+              Use Assembly Syntax
+            </label>
+
+            <Editor
+              height="240px"
+              defaultLanguage="plaintext"
+              value={input}
+              onChange={v => setInput(v || '')}
+              onMount={(ed, mon) => {
+                setEditor(ed);
+                setMonaco(mon);
+              }}
+              theme="vs-dark"
+              options={{
+                fontSize: 14,
+                fontFamily: 'monospace',
+                minimap: { enabled: false },
+                lineNumbers: 'on',
+                scrollBeyondLastLine: false,
+                wordWrap: 'on',
+                readOnly: !isAssembly,
+                ariaLabel: 'Assembly Code Editor',
+                placeholder: isAssembly
+                  ? 'Enter your program using custom Assembly (e.g., LOAD R1 5)...'
+                  : 'Enter raw byte values (e.g., 1 17 5 2 18 17 17 3 18 7)',
+              }}
+            />
+
+            {/* AI Assistant Input */}
+            <div className="mt-4">
+              <input
+                type="text"
+                className="w-full px-3 py-2 text-sm text-white rounded"
+                placeholder="Ask AI: e.g., load and print a number"
+                value={aiPrompt}
+                onChange={e => setAiPrompt(e.target.value)}
+              />
+              <button
+                onClick={async () => {
+                  const resp = await askGPT(
+                    `Convert this idea into assembly for a custom VM:\n\n${aiPrompt}`
+                  );
+                  setInput(resp);
+                }}
+                className="mt-2 bg-sky-600 hover:bg-sky-700 text-white px-4 py-2 rounded w-full transition"
+              >
+                Generate with GPT
+              </button>
             </div>
 
+            {/* Debug Controls */}
             {vmInstance && editor && monaco && (
-              <DebugControls
-                vmInstance={vmInstance}
-                editor={editor}
-                monaco={monaco}
-                sourceMap={sourceMap}
-                programBytes={programBytes}
-              />
+              <div className="mt-4">
+                <DebugControls
+                  vmInstance={vmInstance}
+                  editor={editor}
+                  monaco={monaco}
+                  sourceMap={sourceMap}
+                  programBytes={programBytes}
+                />
+              </div>
             )}
 
-            <div className="flex gap-4">
+            {/* Run & Clear Buttons */}
+            <div className="flex gap-4 mt-4">
               <button
                 onClick={handleRunVM}
                 className="flex-1 bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white py-2 rounded-lg shadow transition"
@@ -192,17 +198,18 @@ function App() {
                 Clear Code
               </button>
             </div>
-          </div>
+          </MacWindow>
 
           {/* Right Panel */}
           <div className="space-y-6">
-            <section className="bg-[var(--panel)] p-6 rounded-xl border border-white/10 shadow-lg">
-              <h2 className="text-lg font-semibold text-orange-300 mb-2">Output</h2>
+            {/* Output Window */}
+            <MacWindow title="Output">
               <pre className="bg-black p-4 rounded text-green-400 text-sm whitespace-pre-wrap min-h-[120px]">
                 {output}
               </pre>
-            </section>
+            </MacWindow>
 
+            {/* Memory & Canvas (wrapped internally) */}
             {vmInstance && (
               <MemoryViewer vmInstance={vmInstance} version={runCount} />
             )}
@@ -210,7 +217,7 @@ function App() {
               <CanvasOutput vmInstance={vmInstance} drawTrigger={runCount} />
             )}
 
-            <p className="text-gray-500 text-xs mt-2">
+            <p className="text-orange-400 text-xs mt-2">
               VM Status: {vmInstance ? 'Ready' : 'Loading...'}
             </p>
           </div>
@@ -232,7 +239,9 @@ function App() {
               animate={{ rotate: [2, -2, 2], repeat: Infinity, duration: 0.8 }}
             >
               Debug Mode Activated —{' '}
-              <span className="font-bold text-orange-400">RETRO CORE UNLOCKED</span>
+              <span className="font-bold text-orange-400">
+                RETRO CORE UNLOCKED
+              </span>
             </motion.div>
           </motion.div>
         )}
