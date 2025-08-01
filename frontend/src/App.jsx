@@ -12,19 +12,20 @@ import Editor from '@monaco-editor/react';
 import { askGPT } from './askGPT';
 import MacWindow from './components/MacWindow';
 import About from './components/About';
+import HowToUseWindow from './components/HowToUseWindow';
 
 function App() {
-  const [vmInstance, setVmInstance] = useState(null);
-  const [input, setInput] = useState('');
-  const [isAssembly, setIsAssembly] = useState(true);
-  const [output, setOutput] = useState('');
+  const [vmInstance, setVmInstance]     = useState(null);
+  const [input, setInput]               = useState('');
+  const [isAssembly, setIsAssembly]     = useState(true);
+  const [output, setOutput]             = useState('');
   const [easterEggActive, setEasterEggActive] = useState(false);
-  const [runCount, setRunCount] = useState(0);
+  const [runCount, setRunCount]         = useState(0);
   const [programBytes, setProgramBytes] = useState(new Uint8Array());
-  const [editor, setEditor] = useState(null);
-  const [monaco, setMonaco] = useState(null);
-  const [sourceMap, setSourceMap] = useState({});
-  const [aiPrompt, setAiPrompt] = useState('');
+  const [editor, setEditor]             = useState(null);
+  const [monaco, setMonaco]             = useState(null);
+  const [sourceMap, setSourceMap]       = useState({});
+  const [aiPrompt, setAiPrompt]         = useState('');
 
   useEffect(() => {
     const script = document.createElement('script');
@@ -33,9 +34,11 @@ function App() {
       const Module = await loadVM();
       setVmInstance(Module);
 
+      // demo on load
       const demo = `LOAD R1 5\nADD R2 R1 R1\nPRINT R2\nHALT`;
       setInput(demo);
 
+      // prime memory with demo bytes
       const bytes = assemble(demo);
       setSourceMap({});
       setProgramBytes(Uint8Array.from(bytes));
@@ -44,6 +47,9 @@ function App() {
       const heap = new Uint8Array(Module.HEAPU8.buffer);
       heap.fill(0, ptr, ptr + 2048);
       heap.set(bytes, ptr);
+
+      // show demo bytes in MemoryViewer
+      setRunCount(c => c + 1);
     };
     document.body.appendChild(script);
   }, []);
@@ -53,12 +59,14 @@ function App() {
       setOutput('❌ VM not ready.');
       return;
     }
+    // Easter egg: “HALT\nHALT”
     if (input.trim().toUpperCase() === 'HALT\nHALT') {
       setEasterEggActive(true);
       setTimeout(() => setEasterEggActive(false), 4000);
       return;
     }
 
+    // 1) assemble or parse raw bytes
     let bytes;
     try {
       bytes = isAssembly
@@ -70,11 +78,16 @@ function App() {
       return;
     }
 
-    const ptr = vmInstance._get_memory();
+    // 2) write into WASM memory
+    const ptr   = vmInstance._get_memory();
     const heapU = new Uint8Array(vmInstance.HEAPU8.buffer);
     heapU.fill(0, ptr, ptr + 2048);
     heapU.set(bytes, ptr);
 
+    // 👇 IMMEDIATELY bump runCount so MemoryViewer shows your code bytes
+    setRunCount(c => c + 1);
+
+    // 3) capture console.log output
     let buf = '';
     const realLog = console.log;
     console.log = (...args) => {
@@ -82,6 +95,7 @@ function App() {
       realLog(...args);
     };
 
+    // 4) run it
     try {
       vmInstance._run_vm();
     } catch (e) {
@@ -91,30 +105,31 @@ function App() {
     }
     console.log = realLog;
 
+    // 5) gather registers + printed output
     const regs = Array.from({ length: 8 }, (_, i) =>
       `R${i} = ${vmInstance._get_register(i)}`
     ).join('\n');
-
-    const out = buf.trim();
+    const out  = buf.trim();
     setOutput(out ? `${out}\n\n${regs}` : regs);
+
+    // 👇 bump again so MemoryViewer picks up any STOREs / side-effects
     setRunCount(c => c + 1);
   };
 
   return (
     <>
       <Navbar />
-
       <main className="pt-16 md:pt-20 min-h-screen bg-[var(--bg)] text-[var(--text-main)] px-4 md:px-8 pb-12 font-mono">
         {/* Title */}
         <div className="text-center mb-10 mt-8">
-  <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[var(--heading-color)]">
-    retroWeb Emulator
-  </h1>
-  <span className="inline-block w-25 h-1 bg-[var(--accent)] animate-pulse rounded-sm"></span>
-</div>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-[var(--heading-color)]">
+            retroWeb Emulator
+          </h1>
+          <span className="inline-block w-25 h-1 bg-[var(--accent)] animate-pulse rounded-sm"></span>
+        </div>
 
         <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-10">
-          {/* Left Panel → Code Editor */}
+          {/* Code Editor Panel */}
           <MacWindow title="Code Editor">
             <label className="flex items-center text-[var(--text-muted)] gap-2 text-sm mb-2">
               <input
@@ -143,14 +158,13 @@ function App() {
                 scrollBeyondLastLine: false,
                 wordWrap: 'on',
                 readOnly: !isAssembly,
-                ariaLabel: 'Assembly Code Editor',
                 placeholder: isAssembly
                   ? 'Enter custom Assembly (e.g., LOAD R1 5)...'
                   : 'Enter raw bytes (e.g., 1 17 5 2 18 17 17 3 18 7)',
               }}
             />
 
-            {/* AI Assistant Input */}
+            {/* AI Assistant */}
             <div className="mt-4">
               <input
                 type="text"
@@ -172,7 +186,7 @@ function App() {
               </button>
             </div>
 
-            {/* Debug Controls */}
+            {/* Debug Controls (Step, Reset) */}
             {vmInstance && editor && monaco && (
               <div className="mt-4 rounded-xl border border-[var(--accent)] bg-[var(--panel)] p-4">
                 <DebugControls
@@ -205,21 +219,19 @@ function App() {
             </div>
           </MacWindow>
 
-          {/* Right Panel */}
+          {/* Output / Memory / Canvas */}
           <div className="space-y-6">
             <MacWindow title="Output">
               <div className="rounded-xl border border-[var(--accent)] overflow-hidden">
-                {/* Inner title bar */}
                 <div
                   className="px-3 py-1 text-xs font-mono"
                   style={{
                     backgroundColor: 'var(--window-header-bg)',
-                    color: 'var(--window-title-text)',
+                    color:           'var(--window-title-text)',
                   }}
                 >
                   Console Dump
                 </div>
-                {/* Inner content */}
                 <pre className="bg-[var(--output-bg)] p-4 text-[var(--accent)] text-sm whitespace-pre-wrap min-h-[120px]">
                   {output}
                 </pre>
@@ -233,12 +245,9 @@ function App() {
               <CanvasOutput vmInstance={vmInstance} drawTrigger={runCount} />
             )}
 
-            <p
-  className="text-xs text-[var(--accent)] mt-2 
-             text-center sm:text-left px-4 animate-pulse"
->
-  VM Status: {vmInstance ? 'Ready' : 'Loading...'}
-</p>
+            <p className="text-xs text-[var(--accent)] mt-2 text-center sm:text-left px-4 animate-pulse">
+              VM Status: {vmInstance ? 'Ready' : 'Loading...'}
+            </p>
           </div>
         </div>
       </main>
@@ -266,8 +275,9 @@ function App() {
         )}
       </AnimatePresence>
 
-      <About />
+      <HowToUseWindow />
 
+      <About />
       <Footer />
     </>
   );

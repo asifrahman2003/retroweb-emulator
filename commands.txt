@@ -2,3 +2,76 @@
 (base) asifrahman@Muhammad-Asifs-MacBook-Pro vm % mv vm.wasm ../frontend/public/
 (base) asifrahman@Muhammad-Asifs-MacBook-Pro vm % mv vm.js ../frontend/public/
 (base) asifrahman@Muhammad-Asifs-MacBook-Pro vm % 
+
+
+plan: 
+
+1. Register Model Expansion
+Introduce types of registers students encounter in real machines:
+
+Register Type	Purpose	Example UI Idea
+R0-R7	General purpose	Already present (expandable)
+$t0–$t7	Temporary Registers	Add a toggle view or dedicated panel
+$s0–$s7	Saved Registers	Label/register slot expansion
+PC	Program Counter	You already show it, highlight clearly
+IR	Instruction Register	Show current decoded instruction
+SP, FP	Stack & Frame Pointers	If you add a stack-based feature later
+
+Educational Note: This mimics how MIPS and real CPUs structure registers.
+
+2. Instruction Set Enhancements
+Add new instructions to mirror a broader CPU instruction set:
+
+Instruction	Category	Description
+SUB, MUL, DIV	Arithmetic	More complex operations
+JMP, JZ, JNZ	Control Flow	Conditional logic and loops
+PUSH, POP	Stack ops	Introduce memory frame management
+CALL, RET	Function simulation	If you ever simulate call stacks
+PIX	Graphical output	Already implemented — can extend
+
+✅ Add simple control flow and conditionals for key learning!
+
+3. Stack & Call Frame Simulation (Optional, Advanced)
+Let students simulate recursion or function calls.
+
+Add visual stack panel (with push/pop animation)
+
+Simulate function calls and returns
+
+Introduce call frames, arguments, return addresses
+
+4. Guided Exercises or Challenges
+Let users load premade challenge files like:
+
+Reverse an array
+
+Add two numbers and print
+
+Jump and loop to print "Hello" 5 times
+
+Basic pixel drawing using PIX
+
+Use .txt or .asm files + provide solution hints.
+
+5. Optional UI Enhancements for Learning
+Live Code Tooltip: Hover over instructions to explain what they do
+
+Error Console: Show stack trace if bad instruction is entered
+
+Register Coloring: Highlight updated registers (temporary flash?)
+
+6. Learning Panel or Docs Embed
+Interactive Computer Architecture 101 guide
+
+Embedded markdown doc in a sidebar
+
+"What is a register?" → Answer with visual and code
+
+Suggested Roadmap
+Phase	Feature
+MVP (✅ Done)	Core VM, step execution, memory viewer
+v1.1	Temporary/saved registers UI
+v1.2	Add instructions (JMP, SUB, MUL, etc.)
+v1.3	Simple Stack + Call Frame support
+v2.0	Challenge Mode + Learning Assistant panel
+v2.1	AI Code Assistant Integration (GPT prompt helper)

@@ -4,6 +4,7 @@ export const opcodeMap = {
   LOAD:  1,
   ADD:   2,
   SUB:   3,
+  STORE: 4,
   PRINT: 5,
   JZ:    6,
   JMP:   7,
@@ -21,11 +22,22 @@ function parseRegister(tok) {
 }
 
 function parseValue(tok, labels) {
-  if (/^\d+$/.test(tok)) return Number(tok);
-  const label = tok.toUpperCase();
-  if (!(label in labels)) throw new Error(`Unknown label: ${label}`);
-  return labels[label];
+  // hex literal?  (0x…)
+  if (/^0x[0-9a-f]+$/i.test(tok)) {
+    return parseInt(tok, 16)
+  }
+  // decimal literal?
+  if (/^\d+$/.test(tok)) {
+    return Number(tok)
+  }
+  // otherwise it must be a label
+  const label = tok.toUpperCase()
+  if (!(label in labels)) {
+    throw new Error(`Unknown label: ${label}`)
+  }
+  return labels[label]
 }
+
 
 export function assemble(asmCode) {
   const lines = asmCode
@@ -49,6 +61,7 @@ export function assemble(asmCode) {
       if (code === opcodeMap.LOAD)           pc += 3;
       else if (code === opcodeMap.ADD ||
                code === opcodeMap.SUB)       pc += 4;
+      else if (code === opcodeMap.STORE)     pc += 3;
       else if (code === opcodeMap.PRINT)     pc += 2;
       else if (code === opcodeMap.JZ)        pc += 3;
       else if (code === opcodeMap.JMP)       pc += 2;
@@ -79,6 +92,10 @@ export function assemble(asmCode) {
         bytecode.push(parseRegister(parts[1]));
         bytecode.push(parseRegister(parts[2]));
         bytecode.push(parseRegister(parts[3]));
+        break;
+      case opcodeMap.STORE:
+        bytecode.push(parseRegister(parts[1]));
+        bytecode.push(parseValue(parts[2], labels));
         break;
 
       case opcodeMap.PRINT:
