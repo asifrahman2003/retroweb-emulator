@@ -66,7 +66,7 @@ export default function Footer() {
 
 
       <p className="text-xs mt-3 text-gray-600 italic hover:text-pink-400 transition duration-300 font-mono">
-        {`<psst> try typing HALT twice 👀`}
+        {`<psst> try typing HALT twice 👀 </psst>`}
       </p>
     </footer>
   );
