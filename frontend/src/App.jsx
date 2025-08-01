@@ -105,7 +105,7 @@ function App() {
       <Navbar />
       <main className="min-h-screen bg-[var(--bg)] text-white px-4 md:px-8 py-12 font-mono">
         <h1 className="text-4xl font-bold text-orange-500 mb-8 text-center">
-          RetroWeb Emulator
+          retroWeb Emulator
         </h1>
 
         <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-10">
