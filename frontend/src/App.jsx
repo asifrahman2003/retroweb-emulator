@@ -13,6 +13,7 @@ import { askGPT } from './askGPT';
 import MacWindow from './components/MacWindow';
 import About from './components/About';
 import HowToUseWindow from './components/HowToUseWindow';
+import { Analytics } from "@vercel/analytics/react"
 
 function App() {
   const [vmInstance, setVmInstance]     = useState(null);
@@ -279,6 +280,7 @@ function App() {
 
       <About />
       <Footer />
+      <Analytics/>
     </>
   );
 }
