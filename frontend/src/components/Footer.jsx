@@ -5,7 +5,7 @@ export default function Footer() {
   return (
     <footer
   className="
-    mt-6 w-full text-center text-gray-500 py-6
+    w-full text-center text-gray-500 py-6
     border-t border-white/10 font-mono
     text-xs sm:text-sm md:text-base
   "
