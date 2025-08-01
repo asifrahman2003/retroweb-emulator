@@ -23,6 +23,7 @@
 #define OP_LOAD   1
 #define OP_ADD    2
 #define OP_SUB    3
+#define OP_STORE 4  // store R to memory
 #define OP_PRINT  5
 #define OP_JZ     6
 #define OP_JMP    7

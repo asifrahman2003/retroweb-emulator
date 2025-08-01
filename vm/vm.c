@@ -3,7 +3,7 @@
 #include <string.h>
 #include "vm.h"
 
-// your globals
+// globals
 unsigned char memory[MEM_SIZE]    = {0};
 unsigned int  registers[NUM_REGS] = {0};
 unsigned int  pc                  = 0;
@@ -43,6 +43,16 @@ static void exec_instruction(void) {
         pc += 4;
         break;
       }
+
+      case OP_STORE: {
+        unsigned char r = memory[pc+1];      // Register to store
+        unsigned char addr = memory[pc+2];   // Memory address
+        memory[addr] = (unsigned char)registers[r];
+        printf("STORE R%u (%u) → mem[%u]\n", r, registers[r], addr);
+        pc += 3;
+        break;
+      }
+
 
       case OP_PRINT: {
         unsigned char r = memory[pc+1];
@@ -145,46 +155,37 @@ void run_vm(void) {
 
 #ifdef TEST_VM
 #include <assert.h>
-
 int main() {
-    // 1) Build a tiny program in memory:
-    //    LOAD R0 ← 5       (3 bytes)
-    //    ADD  R1 ← R0 + R0 (4 bytes)
-    //    HALT              (1 byte)
+    printf("\n=== Running VM Test Suite ===\n");
+
+    // Test Program: writes results to 0x20 and 0x21, well past the 17-byte code
     unsigned char program[] = {
-      OP_LOAD, 0, 5,
-      OP_ADD,  1, 0, 0,
-      OP_HALT
+        OP_LOAD,  0, 42,       // R0 = 42
+        OP_STORE, 0, 0x20,     // mem[0x20] = 42
+        OP_LOAD,  1, 7,        // R1 = 7
+        OP_ADD,   2, 0, 1,     // R2 = R0 + R1 = 49
+        OP_STORE, 2, 0x21,     // mem[0x21] = 49
+        OP_HALT
     };
+
+    // clear and load
+    memset(memory, 0, sizeof(memory));
+    memset(registers, 0, sizeof(registers));
+    pc = 0;
     memcpy(memory, program, sizeof(program));
 
-    // 2) Reset and check PC/reset behavior
-    reset_vm();
-    assert(get_pc() == 0);
+    // run
+    while (memory[pc] != OP_HALT) step_vm();
+    step_vm();  // final HALT
 
-    // 3) Step once: should execute LOAD, advancing PC by 3
-    step_vm();
-    unsigned int pc1 = get_pc();
-    printf("After 1 step, PC = %u (expect 3)\n", pc1);
-    assert(pc1 == 3);
+    // verify
+    assert(registers[0] == 42);
+    assert(memory[0x20] == 42);
+    assert(registers[1] == 7);
+    assert(registers[2] == 49);
+    assert(memory[0x21] == 49);
 
-    // 4) Check register R0 was set to 5
-    unsigned int r0 = get_register(0);
-    printf("R0 = %u (expect 5)\n", r0);
-    assert(r0 == 5);
-
-    // 5) Step again: should execute ADD, advancing PC by 4 (to 7)
-    step_vm();
-    unsigned int pc2 = get_pc();
-    printf("After 2 steps, PC = %u (expect 7)\n", pc2);
-    assert(pc2 == 7);
-
-    // 6) Check R1 = R0 + R0 = 10
-    unsigned int r1 = get_register(1);
-    printf("R1 = %u (expect 10)\n", r1);
-    assert(r1 == 10);
-
-    printf("✅ TEST_VM all assertions passed.\n");
+    printf("✅ All assertions passed! OP_STORE and related ops are working correctly.\n");
     return 0;
 }
 #endif
