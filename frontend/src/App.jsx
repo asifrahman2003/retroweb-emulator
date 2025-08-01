@@ -230,9 +230,12 @@ function App() {
               <CanvasOutput vmInstance={vmInstance} drawTrigger={runCount} />
             )}
 
-            <p className="text-xs text-[var(--accent)] mt-2">
-              VM Status: {vmInstance ? 'Ready' : 'Loading...'}
-            </p>
+            <p
+  className="text-xs text-[var(--accent)] mt-2 
+             text-center sm:text-left px-4"
+>
+  VM Status: {vmInstance ? 'Ready' : 'Loading...'}
+</p>
           </div>
         </div>
       </main>

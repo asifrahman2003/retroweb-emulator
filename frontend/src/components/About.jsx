@@ -1,8 +1,8 @@
 // src/components/About.jsx
 export default function About() {
   return (
-    <section className="max-w-4xl mx-auto px-6 py-16 text-gray-300 font-mono">
-      <h2 className="text-2xl sm:text-3xl font-bold text-orange-400 mb-6 border-b border-white/10 pb-2 text-center">
+    <section className="max-w-4xl mx-auto px-6 py-16 font-mono text-[var(--text-main)]">
+      <h2 className="text-2xl sm:text-3xl font-bold text-[var(--accent)] mb-6 border-b border-[var(--panel-border)] pb-2 text-center">
         About retroWeb
       </h2>
       <p className="mb-4 leading-relaxed text-sm sm:text-base text-center">
@@ -12,7 +12,7 @@ export default function About() {
       </p>
 
       <p className="mb-4 leading-relaxed text-sm sm:text-base text-center">
-        It supports a custom instruction set (e.g. <code className="text-orange-300">LOAD, ADD, PRINT, HALT</code>) and includes 
+        It supports a custom instruction set (e.g. <code className="text-[var(--accent)] font-semibold">LOAD, ADD, PRINT, HALT</code>) and includes 
         a memory viewer, console output, and step-by-step execution to help you visualize how each operation affects the system.
       </p>
 
@@ -21,7 +21,7 @@ export default function About() {
         this emulator gives you a hands-on way to explore how a basic CPU works.
       </p>
 
-      <p className="leading-relaxed text-sm sm:text-base italic text-gray-400 mt-6 text-center">
+      <p className="leading-relaxed text-sm sm:text-base italic text-[var(--text-muted)] mt-6 text-center">
         P.S. It also supports AI-powered code generation via GPT (Coming soon)!
       </p>
     </section>
