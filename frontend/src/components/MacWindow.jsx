@@ -1,4 +1,5 @@
 // src/components/MacWindow.jsx
+
 import React from 'react';
 
 export default function MacWindow({ title, children }) {
@@ -10,34 +11,36 @@ export default function MacWindow({ title, children }) {
         border: '1px solid var(--window-border)',
       }}
     >
-      {/* title bar */}
+      {/* Title bar */}
       <div
-        className="flex items-center px-3 py-1"
+        className="relative flex items-center px-3 py-2"
         style={{
           backgroundColor: 'var(--window-header-bg)',
           borderBottom: '1px solid var(--window-border)',
         }}
       >
-        {/* traffic lights */}
-        <div className="flex space-x-2">
+        {/* Traffic lights */}
+        <div className="flex space-x-2 z-10">
           <span className="h-3 w-3 bg-red-500 rounded-full" />
           <span className="h-3 w-3 bg-yellow-500 rounded-full" />
           <span className="h-3 w-3 bg-green-500 rounded-full" />
         </div>
 
-        {/* window title */}
-        <div
-          className="flex-1 text-xs text-[var(--window-title-text)] text-center select-none"
-        >
-          {title}
+        {/* Centered window title */}
+        <div className="absolute inset-0 flex justify-center items-center pointer-events-none">
+          <span className="text-sm text-[var(--window-title-text)] select-none">
+            {title}
+          </span>
         </div>
 
-        {/* spacer */}
+        {/* Spacer to preserve layout symmetry */}
         <div className="w-6" />
       </div>
 
-      {/* content area */}
-      <div className="p-4">{children}</div>
+      {/* Content area */}
+      <div className="p-4">
+        {children}
+      </div>
     </div>
   );
 }

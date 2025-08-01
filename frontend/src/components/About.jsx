@@ -1,7 +1,7 @@
 // src/components/About.jsx
 export default function About() {
   return (
-    <section className="max-w-4xl mx-auto px-6 py-16 font-mono text-[var(--text-main)]">
+    <section className="max-w-4xl mx-auto px-6 py-10 font-mono text-[var(--text-main)]">
       <h2 className="text-2xl sm:text-3xl font-bold mb-6 pb-2 text-center border-b border-[var(--panel-border)]"
   style={{ color: 'var(--heading-color)' }}
 >

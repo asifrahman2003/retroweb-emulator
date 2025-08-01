@@ -217,7 +217,7 @@ function App() {
                     color: 'var(--window-title-text)',
                   }}
                 >
-                  Console dump
+                  Console Dump
                 </div>
                 {/* Inner content */}
                 <pre className="bg-[var(--output-bg)] p-4 text-[var(--accent)] text-sm whitespace-pre-wrap min-h-[120px]">
