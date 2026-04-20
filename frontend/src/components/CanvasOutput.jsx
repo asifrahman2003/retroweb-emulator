@@ -16,7 +16,7 @@ const colorPalette = [
   '#FFA500', '#808080', '#4B0082',
 ];
 
-export default function CanvasOutput({ memorySnapshot, drawTrigger }) {
+export default function CanvasOutput({ memorySnapshot, drawTrigger, compact = false }) {
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -42,19 +42,25 @@ export default function CanvasOutput({ memorySnapshot, drawTrigger }) {
     }
   }, [drawTrigger, memorySnapshot]);
 
+  const canvas = (
+    <canvas
+      ref={canvasRef}
+      width={SCREEN_WIDTH * SCALE}
+      height={SCREEN_HEIGHT * SCALE}
+      style={{ display: 'block', maxWidth: '100%', imageRendering: 'pixelated', border: '1px solid rgba(217,106,44,0.4)', borderRadius: 3 }}
+    />
+  );
+
+  if (compact) {
+    return <div style={{ display: 'flex', justifyContent: 'center' }}>{canvas}</div>;
+  }
+
   return (
     <MacWindow title="Canvas" contentClassName="p-3">
       <p className="mb-2 text-center text-xs text-[var(--text-muted)]">
         Reads colors from framebuffer memory at {formatVmAddress(FRAMEBUFFER_START)}.
       </p>
-      <div className='flex justify-center'>
-        <canvas
-          ref={canvasRef}
-          width={SCREEN_WIDTH * SCALE}
-          height={SCREEN_HEIGHT * SCALE}
-          className="rounded-[6px] border border-orange-500 shadow [image-rendering:pixelated]"
-        />
-      </div>
+      <div className="flex justify-center">{canvas}</div>
     </MacWindow>
   );
 }
