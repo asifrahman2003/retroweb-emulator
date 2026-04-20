@@ -125,7 +125,7 @@ export default function LessonsPage({ examples, onLoadExample }) {
                 className={`rounded-xl border p-4 text-left transition ${
                   active
                     ? 'border-[var(--accent)] bg-[var(--accent-soft)]'
-                    : 'border-[var(--panel-border)] bg-black hover:border-[var(--accent)]'
+                    : 'border-[var(--panel-border)] bg-[var(--panel)] hover:border-[var(--accent)]'
                 }`}
                 title={unit.sourcePath}
               >
@@ -166,7 +166,7 @@ export default function LessonsPage({ examples, onLoadExample }) {
                 className={`rounded-xl border p-4 text-left transition ${
                   active
                     ? 'border-[var(--accent)] bg-[var(--accent-soft)]'
-                    : 'border-[var(--panel-border)] bg-black hover:border-[var(--accent)]'
+                    : 'border-[var(--panel-border)] bg-[var(--panel)] hover:border-[var(--accent)]'
                 }`}
               >
                 <div className="flex items-start justify-between gap-3">
@@ -214,7 +214,7 @@ export default function LessonsPage({ examples, onLoadExample }) {
               {activeTrack.outcomes.map((outcome) => (
                 <div
                   key={outcome}
-                  className="rounded-lg border border-[var(--panel-border)] bg-black px-3 py-2 text-sm text-[var(--text-muted)]"
+                  className="rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] px-3 py-2 text-sm text-[var(--text-muted)]"
                 >
                   {outcome}
                 </div>
@@ -234,7 +234,7 @@ export default function LessonsPage({ examples, onLoadExample }) {
                 .map((checkpoint) => (
                   <div
                     key={checkpoint}
-                    className="rounded-lg border border-[var(--panel-border)] bg-black px-3 py-2 text-sm text-[var(--text-muted)]"
+                    className="rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] px-3 py-2 text-sm text-[var(--text-muted)]"
                   >
                     {checkpoint}
                   </div>
@@ -257,7 +257,7 @@ export default function LessonsPage({ examples, onLoadExample }) {
                     className={`w-full rounded-lg border px-4 py-3 text-left transition ${
                       active
                         ? 'border-[var(--accent)] bg-[var(--accent-soft)] text-[var(--text-main)]'
-                        : 'border-[var(--panel-border)] bg-black text-[var(--text-muted)] hover:border-[var(--accent)]'
+                        : 'border-[var(--panel-border)] bg-[var(--panel)] text-[var(--text-muted)] hover:border-[var(--accent)]'
                     }`}
                   >
                     <div className="flex items-center justify-between gap-3">
@@ -275,15 +275,8 @@ export default function LessonsPage({ examples, onLoadExample }) {
         <div className="relative overflow-hidden rounded-[18px] border border-[var(--panel-border)] bg-[var(--panel-soft)]">
           <div className="pointer-events-none absolute inset-0 opacity-40">
             <div
-              className="absolute -right-12 top-8 h-36 w-36 rounded-full border border-dashed"
-              style={{ borderColor: `${activeTrack.accent}66` }}
-            />
-            <div
               className="absolute left-10 top-44 h-16 w-16 rotate-12 rounded-lg border border-dashed"
               style={{ borderColor: `${activeTrack.accent}44` }}
-            />
-            <div
-              className="absolute bottom-16 right-24 h-20 w-20 rounded-full bg-[radial-gradient(circle,_rgba(249,115,22,0.12)_0%,_transparent_72%)]"
             />
             <svg className="absolute bottom-8 left-6 h-24 w-48 text-[var(--panel-border)]" viewBox="0 0 180 90" fill="none">
               <path d="M4 70C28 20 50 20 70 58C88 92 118 78 136 38C148 12 164 10 176 28" stroke="currentColor" strokeWidth="2" strokeDasharray="6 8" />
@@ -303,7 +296,7 @@ export default function LessonsPage({ examples, onLoadExample }) {
                   {activeCourse.outcome}
                 </p>
               </div>
-              <div className="rounded-xl border border-[var(--panel-border)] bg-black px-4 py-3 text-sm text-[var(--text-muted)]">
+              <div className="rounded-xl border border-[var(--panel-border)] bg-[var(--panel)] px-4 py-3 text-sm text-[var(--text-muted)]">
                 {activeCourse.modules.length} modules in this course
               </div>
             </div>
@@ -319,7 +312,7 @@ export default function LessonsPage({ examples, onLoadExample }) {
                 return (
                   <article
                     key={module.id}
-                    className="grid gap-4 rounded-xl border border-[var(--panel-border)] bg-black/80 p-4 lg:grid-cols-[88px_minmax(0,1fr)_auto]"
+                    className="grid gap-4 rounded-xl border border-[var(--panel-border)] bg-[var(--panel)] p-4 lg:grid-cols-[88px_minmax(0,1fr)_auto]"
                   >
                     <div className="flex items-center gap-3 lg:block">
                       <div

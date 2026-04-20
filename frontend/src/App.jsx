@@ -615,10 +615,10 @@ function App() {
   const vmStatusClassName = !vmInstance
     ? 'text-[var(--accent)]'
     : vmRuntimeState.lastError !== VM_ERROR_NONE
-      ? 'text-rose-400'
+      ? 'text-[var(--err)]'
       : vmRuntimeState.halted
-        ? 'text-yellow-300'
-        : 'text-emerald-300';
+        ? 'text-[var(--warn)]'
+        : 'text-[var(--ok)]';
   const activeRouteMeta = routeLookup[activeRoute] ?? routeLookup.landing;
   const topNavigationLinks = primaryNavigationLinks
     .map((routeId) => routeLookup[routeId])
@@ -691,6 +691,7 @@ function App() {
         onClearCode={handleClearCode}
         learningPanelProps={learningPanelProps}
         renderedOutput={renderedOutput}
+        registerValues={registerValues}
         memorySnapshot={memorySnapshot}
         currentPc={currentPc}
         executionVersion={executionVersion}
@@ -765,51 +766,44 @@ function App() {
         onNavigate={navigateTo}
       />
 
-      <main className="min-h-screen px-4 pb-14 pt-28 text-[var(--text-main)] md:px-8">
+      <main className="min-h-screen px-0 pb-12 pt-[66px] text-[var(--text-main)]">
         <AnimatePresence mode="wait">
           <motion.div
             key={activeRoute}
-            initial={{ opacity: 0, y: 18 }}
+            initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-            transition={{ duration: 0.28, ease: 'easeOut' }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.22, ease: 'easeOut' }}
           >
             {activeRoute === 'landing' ? (
-              <div className="mx-auto max-w-7xl">
+              <div className="mx-auto max-w-[1480px] px-4 py-7 md:px-6">
                 {pageContent}
               </div>
             ) : (
-              <div className="mx-auto max-w-7xl">
-                <div className="mb-6 rounded-[28px] border border-[var(--panel-border)] bg-[var(--panel)] px-5 py-4">
-                  <p className="text-xs uppercase tracking-[0.24em] text-[var(--text-muted)]">
-                    Current Page
-                  </p>
-                  <div className="mt-2 flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
-                    <div>
-                      <h1 className="text-2xl font-semibold text-[var(--heading-color)]">
-                        {activeRouteMeta.label}
-                      </h1>
-                      <p className="mt-1 text-sm text-[var(--text-muted)]">
-                        {activeRouteMeta.blurb}
-                      </p>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => navigateTo('workspace')}
-                      className="rounded-full bg-[var(--accent)] px-4 py-3 text-sm font-semibold text-white"
-                    >
-                      Jump to Workspace
-                    </button>
-                  </div>
-                </div>
-
-                <div className="grid gap-8 lg:grid-cols-[18rem_minmax(0,1fr)]">
+              <div className="mx-auto max-w-[1480px] px-4 py-7 md:px-6">
+                <div className="rw-app-frame">
                   <AppSidebar
                     sections={platformNavigation}
                     activeRoute={activeRoute}
                     onNavigate={navigateTo}
                   />
-                  <section className="min-w-0">{pageContent}</section>
+                  <section className="rw-app-main">
+                    <div className="rw-app-topbar">
+                      <div className="rw-crumbs">
+                        <span>Home</span>
+                        <span>/</span>
+                        <span style={{ color: 'var(--ink)' }}>{activeRouteMeta.label}</span>
+                      </div>
+                      <div className="rw-search">
+                        <span>Cmd+K</span>
+                        <span>search lessons, labs, docs...</span>
+                      </div>
+                      <div className="rw-top-actions">
+                        <span className="rw-chip rw-chip-accent">VM · {vmStatusLabel}</span>
+                      </div>
+                    </div>
+                    <div className="p-4 md:p-5 lg:p-6">{pageContent}</div>
+                  </section>
                 </div>
               </div>
             )}

@@ -1,46 +1,71 @@
 export default function AppSidebar({ sections, activeRoute, onNavigate }) {
   return (
-    <aside className="w-full rounded-[16px] border border-[var(--panel-border)] bg-[var(--panel-soft)] p-4 lg:sticky lg:top-24 lg:w-72 lg:self-start">
-      <div className="mb-5">
-        <p className="text-xs uppercase tracking-[0.28em] text-[var(--text-muted)]">
-          Platform Map
-        </p>
-        <h2 className="mt-2 text-xl font-semibold text-[var(--heading-color)]">
-          Learning SaaS Shell
-        </h2>
-        <p className="mt-2 text-sm text-[var(--text-muted)]">
-          This navigation is the scaffolding for lessons, labs, reports, instructors, and account workflows.
-        </p>
-      </div>
+    <aside
+      className="flex w-full flex-col gap-2 border-b p-3 lg:min-h-full lg:border-b-0 lg:border-r"
+      style={{
+        background: 'var(--panel-soft)',
+        borderColor: 'var(--line)',
+      }}
+    >
+      <button
+        type="button"
+        onClick={() => onNavigate('dashboard')}
+        className="mb-2 flex items-center gap-2 border-0 bg-transparent px-2 py-2 text-left shadow-none"
+      >
+        <span className="brand-mark" />
+        <span>
+          <span className="block text-sm font-semibold text-[var(--ink)]">retroWeb</span>
+          <span className="block font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--ink-3)]">
+            learner app
+          </span>
+        </span>
+      </button>
 
-      <div className="space-y-5">
-        {sections.map((section) => (
-          <div key={section.title}>
-            <p className="mb-2 text-xs uppercase tracking-[0.24em] text-[var(--text-muted)]">
-              {section.title}
-            </p>
-            <div className="space-y-2">
-              {section.items.map((item) => {
-                const active = item.id === activeRoute;
-                return (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={() => onNavigate(item.id)}
-                    className={`w-full rounded-lg border px-4 py-3 text-left transition ${
-                      active
-                        ? 'border-[var(--accent)] bg-[var(--accent-soft)] text-[var(--text-main)]'
-                        : 'border-[var(--panel-border)] bg-[var(--panel)] text-[var(--text-muted)] hover:border-[var(--accent)] hover:text-[var(--text-main)]'
-                    }`}
-                  >
-                    <div className="font-semibold">{item.label}</div>
-                    <div className="mt-1 text-xs opacity-80">{item.blurb}</div>
-                  </button>
-                );
-              })}
-            </div>
+      {sections.map((section) => (
+        <div key={section.title} className="pt-2">
+          <p className="px-2 pb-1 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--ink-3)]">
+            {section.title}
+          </p>
+          <div className="grid gap-0.5">
+            {section.items.map((item) => {
+              const active = item.id === activeRoute;
+
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => onNavigate(item.id)}
+                  className="flex w-full items-center gap-2 rounded-[4px] px-2 py-1.5 text-left text-[13px]"
+                  style={{
+                    background: active ? 'var(--panel)' : 'transparent',
+                    borderColor: active ? 'var(--line)' : 'transparent',
+                    color: active ? 'var(--ink)' : 'var(--ink-2)',
+                    fontWeight: active ? 600 : 400,
+                    boxShadow: active ? 'inset 0 0 0 1px var(--line)' : 'none',
+                  }}
+                >
+                  <span
+                    className="h-3.5 w-3.5 shrink-0 rounded-[3px] border"
+                    style={{
+                      background: active ? 'var(--accent)' : 'var(--panel)',
+                      borderColor: active ? 'var(--accent)' : 'var(--ink-4)',
+                    }}
+                    aria-hidden="true"
+                  />
+                  <span className="truncate">{item.label}</span>
+                </button>
+              );
+            })}
           </div>
-        ))}
+        </div>
+      ))}
+
+      <div className="mt-auto hidden border-t pt-3 lg:block" style={{ borderColor: 'var(--line)' }}>
+        <div className="px-2 text-[11px] text-[var(--ink-3)]">signed in as</div>
+        <div className="mt-2 flex items-center gap-2 px-2">
+          <span className="h-6 w-6 rounded-full border bg-[var(--panel)]" style={{ borderColor: 'var(--line)' }} />
+          <span className="text-[12px] text-[var(--ink-2)]">local learner</span>
+        </div>
       </div>
     </aside>
   );

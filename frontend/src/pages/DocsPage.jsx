@@ -2,85 +2,171 @@ import MacWindow from '../components/MacWindow';
 import { docsReferenceSections } from '../platformContent';
 
 const instructionRows = [
-  ['LOAD Rx, imm', 'Load an immediate byte value into Rx.'],
-  ['STORE Rx, addr', 'Store Rx into memory at byte address 0-255 in the current assembler profile.'],
-  ['ADD / SUB', 'Compute with register operands and wrap the result to an 8-bit value.'],
-  ['PRINT Rx', 'Append the register value to runtime output.'],
-  ['JMP addr', 'Jump to an instruction address within the loaded program.'],
-  ['JZ Rx, addr', 'Jump only if the given register equals zero.'],
-  ['PIX x, y, c', 'Plot an immediate framebuffer pixel.'],
-  ['PIXR Rx, Ry, Rc', 'Plot a framebuffer pixel from registers.'],
+  ['LOAD Rx, imm', 'Load an immediate byte into a register.'],
+  ['STORE Rx, addr', 'Write a register value into memory.'],
+  ['ADD / SUB', 'Compute with register operands and wrap to 8 bits.'],
+  ['PRINT Rx', 'Append a register value to the console output.'],
+  ['JMP addr', 'Move the program counter to another instruction.'],
+  ['JZ Rx, addr', 'Jump when the selected register is zero.'],
+  ['PIX / PIXR', 'Write pixels into the framebuffer.'],
   ['HALT', 'Stop execution cleanly.'],
 ];
 
 export default function DocsPage() {
   return (
-    <div className="space-y-8">
-      <section className="rounded-[18px] border border-[var(--panel-border)] bg-[var(--panel-soft)] p-6 md:p-8">
-        <p className="text-xs uppercase tracking-[0.24em] text-[var(--text-muted)]">
-          Docs & Help
+    <div className="space-y-6">
+      <header>
+        <div className="rw-eyebrow">Reference</div>
+        <h1 className="mt-1 text-3xl font-semibold text-[var(--heading-color)]">Docs</h1>
+        <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--text-muted)]">
+          Three-column reference layout for architecture concepts, opcodes, examples, and related lessons.
         </p>
-        <h1 className="mt-3 text-3xl font-bold text-[var(--heading-color)] md:text-5xl">
-          Documentation should teach the model of the machine, not just list commands.
-        </h1>
-        <p className="mt-4 max-w-3xl text-sm leading-7 text-[var(--text-muted)] md:text-base">
-          This page is the permanent home for references, FAQs, interpretation guides, and onboarding docs. It replaces ad hoc floating help windows with a product-level documentation surface.
-        </p>
-      </section>
+      </header>
 
-      <section className="grid gap-6 xl:grid-cols-[1fr_1fr]">
-        <MacWindow title="Instruction Reference">
-          <div className="overflow-hidden rounded-xl border border-[var(--panel-border)]">
+      <section className="rw-card grid min-h-[760px] overflow-hidden xl:grid-cols-[248px_minmax(0,1fr)_220px]">
+        <aside className="border-b border-[var(--line)] bg-[var(--panel-soft)] p-4 xl:border-b-0 xl:border-r">
+          <div className="rw-search mb-4 max-w-none">
+            <span>Cmd+K</span>
+            <span>search docs...</span>
+          </div>
+
+          {[
+            ['Getting started', ['Introduction', 'Your first program', 'Run and step']],
+            ['Architecture', ['Overview', 'Memory model', 'Registers', 'Framebuffer']],
+            ['Instruction set', ['Data movement', 'Arithmetic', 'Control flow', 'System']],
+            ['Cookbook', ['Loops', 'String copy', 'Drawing pixels']],
+          ].map(([group, items]) => (
+            <div key={group} className="mb-5">
+              <div className="mb-2 font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--ink-3)]">
+                {group}
+              </div>
+              <div className="grid gap-1 text-sm">
+                {items.map((item) => (
+                  <button
+                    key={item}
+                    type="button"
+                    className="rounded-[4px] border-0 bg-transparent px-2 py-1 text-left text-[var(--ink-2)]"
+                    style={{
+                      color: item === 'Control flow' ? 'var(--accent)' : undefined,
+                      boxShadow: item === 'Control flow' ? 'inset 2px 0 0 var(--accent)' : 'none',
+                    }}
+                  >
+                    {item}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
+        </aside>
+
+        <article className="min-w-0 p-5 md:p-8">
+          <div className="font-mono text-[11px] text-[var(--ink-3)]">
+            Docs / Instruction set / Control flow
+          </div>
+          <div className="mt-4 flex flex-wrap gap-2">
+            <span className="rw-chip rw-chip-accent">control flow</span>
+            <span className="rw-chip">beginner</span>
+            <span className="rw-chip">updated locally</span>
+          </div>
+
+          <h2 className="mt-4 text-3xl font-semibold text-[var(--ink)]">JZ · jump if zero</h2>
+          <p className="mt-2 max-w-3xl text-base leading-7 text-[var(--text-muted)]">
+            Branch to an address when the selected register is zero. Use it to exit loops,
+            gate output, and make small programs respond to state.
+          </p>
+
+          <div className="rw-card-soft mt-5 grid gap-3 p-4 font-mono text-sm md:grid-cols-4">
+            <span><span className="text-[var(--ink-3)]">SYNTAX</span> JZ Rx, addr</span>
+            <span><span className="text-[var(--ink-3)]">SIZE</span> 3 bytes</span>
+            <span><span className="text-[var(--ink-3)]">CYCLES</span> VM-defined</span>
+            <span><span className="text-[var(--ink-3)]">STATE</span> PC</span>
+          </div>
+
+          <div className="mt-5 border-l-4 border-[#3a6fb0] bg-[#eaf1fa] p-4 text-sm leading-6 text-[#1f436f]">
+            JZ in the current VM checks a register value directly. Future architecture tracks can
+            evolve this into a flags-based branch model.
+          </div>
+
+          <h3 className="mt-8 text-xl font-semibold text-[var(--ink)]">Instruction reference</h3>
+          <div className="mt-3 overflow-hidden rounded-[6px] border border-[var(--line)]">
             <table className="w-full border-collapse text-sm">
-              <thead className="bg-[var(--window-header-bg)] text-[var(--text-muted)]">
+              <thead className="bg-[var(--panel-soft)] text-left text-[var(--ink-3)]">
                 <tr>
-                  <th className="px-4 py-3 text-left">Instruction</th>
-                  <th className="px-4 py-3 text-left">Explanation</th>
+                  <th className="px-4 py-3 font-mono text-[11px] uppercase tracking-[0.08em]">Instruction</th>
+                  <th className="px-4 py-3 font-mono text-[11px] uppercase tracking-[0.08em]">Explanation</th>
                 </tr>
               </thead>
               <tbody>
                 {instructionRows.map(([instruction, description]) => (
-                  <tr key={instruction} className="border-t border-[var(--panel-border)] bg-[var(--panel-soft)]">
-                    <td className="px-4 py-3 text-[var(--accent)]">{instruction}</td>
+                  <tr key={instruction} className="border-t border-[var(--line-2)]">
+                    <td className="px-4 py-3 font-mono text-[var(--accent)]">{instruction}</td>
                     <td className="px-4 py-3 text-[var(--text-muted)]">{description}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
-        </MacWindow>
 
-        <MacWindow title="Reference Sections">
-          <div className="space-y-4">
+          <h3 className="mt-8 text-xl font-semibold text-[var(--ink)]">Example · countdown</h3>
+          <div className="mt-3">
+            <MacWindow title="jz-countdown.asm">
+              <pre className="whitespace-pre-wrap font-mono text-sm leading-6 text-[#d8d2c8]">{`; counts R0 down to zero
+LOAD R0 5
+PRINT R0
+SUB R0 R0 R1
+JZ R0 done
+JMP loop
+done:
+HALT`}</pre>
+            </MacWindow>
+          </div>
+
+          <h3 className="mt-8 text-xl font-semibold text-[var(--ink)]">Reference sections</h3>
+          <div className="mt-3 grid gap-3 md:grid-cols-2">
             {docsReferenceSections.map((section) => (
-              <div key={section.title} className="rounded-xl border border-[var(--panel-border)] bg-[var(--panel-soft)] p-5">
-                <h2 className="text-lg font-semibold text-[var(--text-main)]">{section.title}</h2>
-                <div className="mt-3 space-y-2 text-sm text-[var(--text-muted)]">
-                  {section.items.map((item) => (
-                    <div key={item}>• {item}</div>
+              <article key={section.title} className="rw-card p-4">
+                <h4 className="font-semibold text-[var(--ink)]">{section.title}</h4>
+                <div className="mt-3 grid gap-2 text-sm leading-6 text-[var(--text-muted)]">
+                  {section.items.slice(0, 3).map((item) => (
+                    <p key={item}>{item}</p>
                   ))}
                 </div>
-              </div>
+              </article>
             ))}
           </div>
-        </MacWindow>
-      </section>
+        </article>
 
-      <MacWindow title="FAQs">
-        <div className="grid gap-4 md:grid-cols-2">
-          {[
-            ['Why start with a custom VM?', 'Because learners can see the entire machine state without fighting a production-grade toolchain on day one.'],
-            ['What should come after Retro?', 'A debugger-first real ISA such as MIPS or RISC-V once the learner understands the runtime model.'],
-            ['How should reports work later?', 'Capture traces, state diffs, rubric comments, and exportable artifacts for instructors and learners.'],
-            ['How should cloud persistence work?', 'Move saved programs, attempts, and lesson progress into Supabase when the platform backend is introduced.'],
-          ].map(([question, answer]) => (
-            <div key={question} className="rounded-xl border border-[var(--panel-border)] bg-[var(--panel-soft)] p-5">
-              <h2 className="text-lg font-semibold text-[var(--text-main)]">{question}</h2>
-              <p className="mt-3 text-sm leading-7 text-[var(--text-muted)]">{answer}</p>
+        <aside className="border-t border-[var(--line)] p-5 xl:border-l xl:border-t-0">
+          <div className="rw-eyebrow" style={{ color: 'var(--ink-3)' }}>
+            On this page
+          </div>
+          <div className="mt-3 grid gap-2 text-sm text-[var(--text-muted)]">
+            {['Syntax', 'Behavior', 'Instruction reference', 'Example', 'Related lessons'].map((item, index) => (
+              <span
+                key={item}
+                className="border-l-2 pl-3"
+                style={{
+                  borderColor: index === 0 ? 'var(--accent)' : 'var(--line)',
+                  color: index === 0 ? 'var(--accent)' : undefined,
+                }}
+              >
+                {item}
+              </span>
+            ))}
+          </div>
+
+          <div className="mt-8 border-t border-[var(--line-2)] pt-5">
+            <div className="rw-eyebrow" style={{ color: 'var(--ink-3)' }}>
+              Contribute
             </div>
-          ))}
-        </div>
-      </MacWindow>
+            <div className="mt-3 grid gap-2 text-sm text-[var(--text-muted)]">
+              <span>Edit this page</span>
+              <span>View on GitHub</span>
+              <span>Report an error</span>
+            </div>
+          </div>
+        </aside>
+      </section>
     </div>
   );
 }
