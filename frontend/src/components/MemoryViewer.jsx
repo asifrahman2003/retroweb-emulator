@@ -40,7 +40,7 @@ export default function MemoryViewer({ memorySnapshot, pc, version }) {
   }
 
   return (
-    <MacWindow title="Memory">
+    <MacWindow title="Memory" contentClassName="p-3">
       <div className="mb-2 flex items-center justify-between gap-3">
         <p className="text-xs text-[var(--text-muted)]">
           Program starts at {formatVmAddress(0)}. Framebuffer starts at {formatVmAddress(FRAMEBUFFER_START)}.
@@ -64,7 +64,7 @@ export default function MemoryViewer({ memorySnapshot, pc, version }) {
           Memory Dump
         </div>
 
-        <div className="bg-[var(--output-bg)] p-4 text-sm font-mono max-h-64 overflow-y-auto space-y-1">
+        <div className="max-h-52 space-y-1 overflow-y-auto bg-[var(--output-bg)] p-3 font-mono text-sm">
           {Array.from(
             { length: Math.ceil(bytesToShow / bytesPerRow) },
             (_, rowIdx) => {

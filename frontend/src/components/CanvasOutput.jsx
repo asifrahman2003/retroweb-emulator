@@ -8,7 +8,7 @@ import {
   formatVmAddress,
 } from '../vmLayout';
 
-const SCALE = 10;
+const SCALE = 8;
 
 const colorPalette = [
   '#000000', '#FFFFFF', '#FF0000', '#00FF00',
@@ -43,8 +43,8 @@ export default function CanvasOutput({ memorySnapshot, drawTrigger }) {
   }, [drawTrigger, memorySnapshot]);
 
   return (
-    <MacWindow title="Canvas">
-      <p className="mb-3 text-center text-xs text-[var(--text-muted)]">
+    <MacWindow title="Canvas" contentClassName="p-3">
+      <p className="mb-2 text-center text-xs text-[var(--text-muted)]">
         Reads colors from framebuffer memory at {formatVmAddress(FRAMEBUFFER_START)}.
       </p>
       <div className='flex justify-center'>

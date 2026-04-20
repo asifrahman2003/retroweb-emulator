@@ -127,70 +127,59 @@ export default function DebugControls({
   };
 
   return (
-    <div className="w-full rounded-md border border-white/10 bg-[var(--panel)] p-4 shadow-inner">
-      <div className="flex flex-wrap gap-3">
+    <div className="w-full rounded-md border border-white/10 bg-[var(--panel)] p-3 shadow-inner">
+      <div className="grid gap-3 lg:grid-cols-[auto_1fr] lg:items-center">
+        <div className="flex flex-wrap gap-2">
         <button
           onClick={handleStep}
           disabled={stepDisabled}
-          className="min-w-24 rounded-md bg-orange-500 px-4 py-2 font-medium text-white transition-colors duration-200 hover:bg-black disabled:cursor-not-allowed disabled:bg-zinc-700 disabled:text-zinc-300"
+          className="min-w-20 rounded-md bg-orange-500 px-3 py-2 font-medium text-white transition-colors duration-200 hover:bg-black disabled:cursor-not-allowed disabled:bg-zinc-700 disabled:text-zinc-300"
         >
           Step
         </button>
         <button
           onClick={handleReset}
-          className="min-w-28 rounded-md border border-white/20 bg-gray-700 px-4 py-2 font-medium text-white transition hover:bg-gray-600"
+          className="min-w-24 rounded-md border border-white/20 bg-gray-700 px-3 py-2 font-medium text-white transition hover:bg-gray-600"
         >
           Reset VM
         </button>
-      </div>
+        </div>
 
-      <div className="mt-4 grid gap-3 md:grid-cols-[minmax(0,160px)_minmax(0,1fr)]">
-        <div className="rounded-md border border-white/10 bg-[var(--bg)] px-3 py-3">
+        <div className="grid gap-2 md:grid-cols-[minmax(0,150px)_minmax(0,140px)_minmax(0,1fr)]">
+        <div className="rounded-md border border-white/10 bg-[var(--bg)] px-3 py-2">
           <div className="text-[10px] uppercase tracking-[0.18em] text-[var(--text-muted)]">
             Runtime
           </div>
-          <span className={`mt-2 inline-flex whitespace-nowrap rounded-md border px-2 py-1 font-mono text-xs ${statusClassName}`}>
+          <span className={`mt-1 inline-flex whitespace-nowrap rounded-md border px-2 py-1 font-mono text-xs ${statusClassName}`}>
             {statusLabel}
           </span>
         </div>
 
-        <div className="rounded-md border border-white/10 bg-[var(--bg)] px-3 py-3">
+        <div className="rounded-md border border-white/10 bg-[var(--bg)] px-3 py-2">
           <div className="text-[10px] uppercase tracking-[0.18em] text-[var(--text-muted)]">
-            Program Counter
+            PC
           </div>
-          <div className="mt-2 font-mono text-sm text-[var(--text-main)]">
+          <div className="mt-1 font-mono text-sm text-[var(--text-main)]">
             0x{pc.toString(16)}
           </div>
         </div>
-      </div>
 
-      <div className="mt-4 rounded-md border border-white/10 bg-[var(--bg)] px-3 py-3">
-        <div className="text-[10px] uppercase tracking-[0.18em] text-[var(--text-muted)]">
-          Registers
-        </div>
-        <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
-          {registers.map((v, i) => (
-            <span
-              key={i}
-              className="rounded-md border border-white/10 bg-[var(--panel)] px-2 py-2 font-mono text-xs text-[var(--text-main)]"
-            >
-              R{i}: {v}
+        <div className="min-w-0 rounded-md border border-white/10 bg-[var(--bg)] px-3 py-2">
+          <div className="mb-2 flex min-w-0 items-center justify-between gap-2 text-[10px] uppercase tracking-[0.18em] text-[var(--text-muted)]">
+            <span>Execution</span>
+            <span className="sr-only">
+              {registers.filter(Boolean).length} regs
             </span>
-          ))}
-        </div>
-      </div>
-
-      <div className="mt-4">
-        <div className="mb-2 text-[10px] uppercase tracking-[0.18em] text-[var(--text-muted)]">
-          Execution Position
-        </div>
-        <div className="h-3 w-full rounded-full bg-white/20">
+          </div>
+        <div className="h-2 w-full rounded-full bg-white/20">
           <div
-            className="h-3 rounded-full bg-[var(--accent)]/80 transition-all"
+            className="h-2 rounded-full bg-[var(--accent)]/80 transition-all"
             style={{
               width: `${Math.min(100, ((pc + 1) / Math.max(programBytes.length || 1, 1)) * 100)}%`,
             }}
           />
+        </div>
+        </div>
         </div>
       </div>
     </div>

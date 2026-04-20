@@ -54,9 +54,9 @@ export default function LearningPanel({
       : 'Not Checked';
 
   return (
-    <MacWindow title="Learning Track" contentClassName="max-h-[min(78vh,860px)] overflow-y-auto">
-      <div className="space-y-5 text-sm">
-        <section className="rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-4">
+    <MacWindow title="Learning Track" contentClassName="max-h-[calc(100vh-240px)] overflow-y-auto p-3">
+      <div className="space-y-3 text-sm">
+        <section className="rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-3">
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-xs uppercase tracking-[0.2em] text-[var(--text-muted)]">
@@ -70,9 +70,9 @@ export default function LearningPanel({
               {profile.level}
             </span>
           </div>
-          <p className="mt-3 text-[var(--text-main)]">{profile.summary}</p>
+          <p className="mt-2 text-[var(--text-main)]">{profile.summary}</p>
           <div className="mt-3 flex flex-wrap gap-2">
-            {profile.learningGoals.map((goal) => (
+            {profile.learningGoals.slice(0, 3).map((goal) => (
               <span
                 key={goal}
                 className="rounded-full bg-[var(--output-bg)] px-3 py-1 text-xs text-[var(--text-muted)]"
@@ -86,7 +86,7 @@ export default function LearningPanel({
           </p>
         </section>
 
-        <section className="rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-4">
+        <section className="rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-3">
           <div className="flex items-center justify-between gap-3">
             <h3 className="text-base font-semibold text-[var(--heading-color)]">
               Guided Example
@@ -125,7 +125,7 @@ export default function LearningPanel({
           </div>
         </section>
 
-        <section className="rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-4">
+        <section className="rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-3">
           <div className="flex items-center justify-between gap-3">
             <h3 className="text-base font-semibold text-[var(--heading-color)]">
               Saved Programs
@@ -188,7 +188,7 @@ export default function LearningPanel({
           )}
         </section>
 
-        <section className="rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-4">
+        <section className="rounded-lg border border-[var(--panel-border)] bg-[var(--panel)] p-3">
           <div className="flex items-center justify-between gap-3">
             <h3 className="text-base font-semibold text-[var(--heading-color)]">
               Challenge
