@@ -1,0 +1,22 @@
+.DS_Store
+
+# Local tool caches
+.emscripten_cache/
+.emscripten_cache_2/
+.playwright-cli/
+
+# Dependency/build outputs
+node_modules/
+dist/
+dist-ssr/
+
+# Logs and local env
+*.log
+*.local
+.env.local
+
+# Native/WASM build outputs generated under vm/.
+# The browser runtime copies committed artifacts into frontend/public/.
+vm/vm.js
+vm/vm.wasm
+vm/*.dSYM/

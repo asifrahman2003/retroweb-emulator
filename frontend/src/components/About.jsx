@@ -15,7 +15,7 @@ export default function About() {
 
       <p className="mb-4 leading-relaxed text-sm sm:text-base text-center">
         It supports a custom instruction set (e.g. <code className="text-[var(--accent)] font-semibold">LOAD, ADD, PRINT, HALT</code>) and includes 
-        a memory viewer, console output, and step-by-step execution to help you visualize how each operation affects the system.
+        a memory viewer, console output, guided examples, and step-by-step execution to help you visualize how each operation affects the system.
       </p>
 
       <p className="mb-4 leading-relaxed text-sm sm:text-base text-center">
@@ -24,7 +24,7 @@ export default function About() {
       </p>
 
       <p className="leading-relaxed text-sm sm:text-base italic text-[var(--text-muted)] mt-6 text-center">
-        P.S. It also supports AI-powered code generation via GPT (Coming soon)!
+        The current build focuses on stepping through code, inspecting memory, and understanding how framebuffer-driven output works.
       </p>
     </section>
   );

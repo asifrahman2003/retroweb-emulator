@@ -2,43 +2,41 @@
 
 import React from 'react';
 
-export default function MacWindow({ title, children }) {
+export default function MacWindow({ title, children, className = '', contentClassName = '' }) {
   return (
     <div
-      className="rounded-xl shadow-lg overflow-hidden"
+      className={`overflow-hidden rounded-[16px] shadow-[0_18px_40px_rgba(2,6,23,0.22)] ${className}`.trim()}
       style={{
         backgroundColor: 'var(--window-bg)',
         border: '1px solid var(--window-border)',
+        boxShadow: '0 18px 40px rgba(2, 6, 23, 0.22), 0 1px 0 rgba(255, 255, 255, 0.04) inset',
       }}
     >
-      {/* Title bar */}
       <div
-        className="relative flex items-center px-3 py-2"
+        className="relative flex items-center px-4 py-2.5"
         style={{
+          background:
+            'linear-gradient(180deg, rgba(255,255,255,0.045) 0%, rgba(255,255,255,0.015) 100%)',
           backgroundColor: 'var(--window-header-bg)',
           borderBottom: '1px solid var(--window-border)',
         }}
       >
-        {/* Traffic lights */}
-        <div className="flex space-x-2 z-10">
-          <span className="h-3 w-3 bg-red-500 rounded-full" />
-          <span className="h-3 w-3 bg-yellow-500 rounded-full" />
-          <span className="h-3 w-3 bg-green-500 rounded-full" />
+        <div className="z-10 flex space-x-2">
+          <span className="h-3 w-3 rounded-full border border-black/15 bg-[#ff5f57] shadow-[0_1px_0_rgba(255,255,255,0.2)_inset]" />
+          <span className="h-3 w-3 rounded-full border border-black/15 bg-[#febc2e] shadow-[0_1px_0_rgba(255,255,255,0.2)_inset]" />
+          <span className="h-3 w-3 rounded-full border border-black/15 bg-[#28c840] shadow-[0_1px_0_rgba(255,255,255,0.2)_inset]" />
         </div>
 
-        {/* Centered window title */}
         <div className="absolute inset-0 flex justify-center items-center pointer-events-none">
-          <span className="text-sm text-[var(--window-title-text)] select-none">
+          <span className="select-none text-[13px] font-medium tracking-[0.01em] text-[var(--window-title-text)]">
             {title}
           </span>
         </div>
 
-        {/* Spacer to preserve layout symmetry */}
         <div className="w-6" />
       </div>
 
-      {/* Content area */}
-      <div className="p-4">
+      <div className={`p-4 ${contentClassName}`.trim()}>
         {children}
       </div>
     </div>

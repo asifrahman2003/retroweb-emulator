@@ -4,70 +4,47 @@ import { motion } from 'framer-motion';
 export default function Footer() {
   return (
     <footer
-  className="
-    w-full text-center text-gray-500 py-6
-    border-t border-white/10 font-mono
-    text-xs sm:text-sm md:text-base
-  "
->
-  <p className="mb-2 text-sm text-gray-400 flex flex-col items-center sm:flex-row sm:justify-center gap-x-1 gap-y-1">
-  <span>© {new Date().getFullYear()} retroWeb Emulator</span>
-  <span className="sm:inline hidden">•</span>
-  <span>Built with ❤️ by{' '}
-    <a
-      href="https://www.iamasiff.com"
-      target="_blank"
-      rel="noopener noreferrer"
-      className="text-orange-400 hover:text-orange-300 font-medium transition"
+      className="border-t border-[var(--panel-border)] px-6 py-10"
     >
-      Asifur Rahman
-    </a>
-  </span>
-</p>
+      <div className="mx-auto flex max-w-7xl flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+        <div>
+          <p className="text-sm font-semibold text-[var(--text-main)]">
+            retroWeb Academy
+          </p>
+          <p className="mt-2 max-w-2xl text-sm leading-7 text-[var(--text-muted)]">
+            Browser-first scaffolding for a low-level programming education SaaS: emulator workspace, lessons, labs, progress, reports, and instructor tooling.
+          </p>
+          <p className="mt-3 text-xs uppercase tracking-[0.22em] text-[var(--text-muted)]">
+            © {new Date().getFullYear()} Asifur Rahman
+          </p>
+        </div>
 
-      <div className="flex flex-col items-center gap-2 my-2">
-      {/* Icons */}
-      <div className="flex items-center justify-center gap-4">
-        <motion.a
-          href="https://github.com/asifrahman2003"
-          target="_blank"
-          rel="noopener noreferrer"
-          whileHover={{ scale: 1.2, rotate: -5 }}
-          whileTap={{ scale: 0.95 }}
-          transition={{ type: 'spring', stiffness: 300 }}
-          className="hover:text-white"
-        >
-          <FaGithub size={22} />
-        </motion.a>
+        <div className="flex items-center gap-4">
+          <motion.a
+            href="https://github.com/asifrahman2003"
+            target="_blank"
+            rel="noopener noreferrer"
+            whileHover={{ scale: 1.1, rotate: -3 }}
+            whileTap={{ scale: 0.96 }}
+            transition={{ type: 'spring', stiffness: 300 }}
+            className="rounded-full border border-[var(--panel-border)] p-3 text-[var(--text-main)]"
+          >
+            <FaGithub size={20} />
+          </motion.a>
 
-        <motion.a
-          href="https://www.linkedin.com/in/iamasiff"
-          target="_blank"
-          rel="noopener noreferrer"
-          whileHover={{ scale: 1.2, rotate: 5 }}
-          whileTap={{ scale: 0.95 }}
-          transition={{ type: 'spring', stiffness: 300 }}
-          className="hover:text-white"
-        >
-          <FaLinkedin size={22} />
-        </motion.a>
+          <motion.a
+            href="https://www.linkedin.com/in/iamasiff"
+            target="_blank"
+            rel="noopener noreferrer"
+            whileHover={{ scale: 1.1, rotate: 3 }}
+            whileTap={{ scale: 0.96 }}
+            transition={{ type: 'spring', stiffness: 300 }}
+            className="rounded-full border border-[var(--panel-border)] p-3 text-[var(--text-main)]"
+          >
+            <FaLinkedin size={20} />
+          </motion.a>
+        </div>
       </div>
-
-      {/* Version Badge */}
-      <motion.span
-        className="bg-gray-700 text-gray-300 px-2 py-0.5 text-xs font-mono rounded-full mt-1"
-        initial={{ opacity: 0, y: 5 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2, duration: 0.4 }}
-      >
-        v0.1 Alpha
-      </motion.span>
-    </div>
-
-
-      <p className="text-xs mt-3 text-gray-600 italic hover:text-pink-400 transition duration-300 font-mono">
-        {`<psst> try typing HALT twice 👀 </psst>`}
-      </p>
     </footer>
   );
 }

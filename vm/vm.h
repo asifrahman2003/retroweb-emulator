@@ -31,9 +31,18 @@
 #define OP_PIXR   9  // register-based x,y,color
 #define OP_HALT 255
 
+#define VM_ERR_NONE              0
+#define VM_ERR_PC_OUT_OF_BOUNDS  1
+#define VM_ERR_BAD_REGISTER      2
+#define VM_ERR_BAD_ADDRESS       3
+#define VM_ERR_BAD_OPCODE        4
+
 extern unsigned char memory[MEM_SIZE];
-extern unsigned int  registers[NUM_REGS];
+extern unsigned int  registers[NUM_REGS]; // Values are normalized to 8-bit arithmetic results.
 extern unsigned int  pc;
+extern unsigned int  halted;
+extern unsigned int  last_error;
+extern unsigned int  program_length;
 
 // Core batch API
 void           run_vm(void);
@@ -45,5 +54,9 @@ void           print_registers(void);
 EMSCRIPTEN_KEEPALIVE void         step_vm(void);
 EMSCRIPTEN_KEEPALIVE unsigned int get_pc(void);
 EMSCRIPTEN_KEEPALIVE void         reset_vm(void);
+EMSCRIPTEN_KEEPALIVE unsigned int get_halted(void);
+EMSCRIPTEN_KEEPALIVE unsigned int get_last_error(void);
+EMSCRIPTEN_KEEPALIVE void         set_program_length(unsigned int length);
+EMSCRIPTEN_KEEPALIVE unsigned int get_program_length(void);
 
 #endif // VM_H

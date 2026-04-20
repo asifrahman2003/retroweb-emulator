@@ -1,4 +1,4 @@
-export async function loadVM() {
-  const instance = await window.createVM(); // this returns the actual module
+export async function loadVM(moduleOverrides = {}) {
+  const instance = await window.createVM(moduleOverrides);
   return instance;
 }

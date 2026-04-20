@@ -13,6 +13,44 @@ export const opcodeMap = {
   HALT: 255,
 };
 
+const operandCounts = {
+  LOAD: 2,
+  ADD: 3,
+  SUB: 3,
+  STORE: 2,
+  PRINT: 1,
+  JZ: 2,
+  JMP: 1,
+  PIX: 3,
+  PIXR: 3,
+  HALT: 0,
+};
+
+function normalizeLine(line) {
+  return line.replace(/\/\/.*$/, '').trim();
+}
+
+function tokenizeInstruction(line) {
+  return line.replaceAll(',', ' ').trim().split(/\s+/).filter(Boolean);
+}
+
+function splitLabels(line) {
+  const labels = [];
+  let remainder = line;
+
+  while (true) {
+    const match = remainder.match(/^([A-Za-z_][A-Za-z0-9_]*):/);
+    if (!match) {
+      break;
+    }
+
+    labels.push(match[1].toUpperCase());
+    remainder = remainder.slice(match[0].length).trim();
+  }
+
+  return { labels, instruction: remainder };
+}
+
 function parseRegister(tok) {
   const t = tok.toUpperCase();
   if (!/^R[0-7]$/.test(t)) {
@@ -21,64 +59,107 @@ function parseRegister(tok) {
   return Number(t.slice(1));
 }
 
+function assertByteRange(value, label) {
+  if (!Number.isInteger(value) || value < 0 || value > 255) {
+    throw new Error(`${label} must be between 0 and 255`);
+  }
+  return value;
+}
+
 function parseValue(tok, labels) {
   // hex literal?  (0x…)
   if (/^0x[0-9a-f]+$/i.test(tok)) {
-    return parseInt(tok, 16)
+    return assertByteRange(parseInt(tok, 16), `Value ${tok}`);
   }
   // decimal literal?
   if (/^\d+$/.test(tok)) {
-    return Number(tok)
+    return assertByteRange(Number(tok), `Value ${tok}`);
   }
   // otherwise it must be a label
-  const label = tok.toUpperCase()
+  const label = tok.toUpperCase();
   if (!(label in labels)) {
-    throw new Error(`Unknown label: ${label}`)
+    throw new Error(`Unknown label: ${label}`);
   }
-  return labels[label]
+  return labels[label];
 }
 
+function getInstructionSize(op, code) {
+  if (code === opcodeMap.LOAD) return 3;
+  if (code === opcodeMap.ADD || code === opcodeMap.SUB) return 4;
+  if (code === opcodeMap.STORE) return 3;
+  if (code === opcodeMap.PRINT) return 2;
+  if (code === opcodeMap.JZ) return 3;
+  if (code === opcodeMap.JMP) return 2;
+  if (code === opcodeMap.PIX) return 4;
+  if (code === opcodeMap.PIXR) return 4;
+  if (code === opcodeMap.HALT) return 1;
 
-export function assemble(asmCode) {
+  throw new Error(`Unhandled opcode size: ${op}`);
+}
+
+function validateOperandCount(op, parts, lineNumber) {
+  const expected = operandCounts[op];
+  const actual = parts.length - 1;
+
+  if (expected == null) {
+    throw new Error(`Unknown opcode: ${op}`);
+  }
+
+  if (actual !== expected) {
+    const operandLabel = expected === 1 ? 'operand' : 'operands';
+    throw new Error(
+      `${op} expects ${expected} ${operandLabel}, got ${actual} on line ${lineNumber}`,
+    );
+  }
+}
+
+export function assembleProgram(asmCode) {
   const lines = asmCode
     .split('\n')
-    .map(l => l.replace(/\/\/.*$/, '').trim())  // strip comments
-    .filter(l => l.length);
+    .map((rawLine, index) => ({
+      lineNumber: index + 1,
+      text: normalizeLine(rawLine),
+    }))
+    .filter(({ text }) => text.length);
 
   const labels = {};
+  const sourceMap = {};
   let pc = 0;
 
   // PASS 1: record label → PC
   for (const line of lines) {
-    if (line.endsWith(':')) {
-      labels[line.slice(0, -1).toUpperCase()] = pc;
-    } else {
-      const op = line.split(/\s+/)[0].toUpperCase();
-      const code = opcodeMap[op];
-      if (code == null) throw new Error(`Unknown opcode: ${op}`);
+    const { labels: lineLabels, instruction } = splitLabels(line.text);
 
-      // instruction size
-      if (code === opcodeMap.LOAD)           pc += 3;
-      else if (code === opcodeMap.ADD ||
-               code === opcodeMap.SUB)       pc += 4;
-      else if (code === opcodeMap.STORE)     pc += 3;
-      else if (code === opcodeMap.PRINT)     pc += 2;
-      else if (code === opcodeMap.JZ)        pc += 3;
-      else if (code === opcodeMap.JMP)       pc += 2;
-      else if (code === opcodeMap.PIX)       pc += 4;
-      else if (code === opcodeMap.PIXR)      pc += 4;
-      else if (code === opcodeMap.HALT)      pc += 1;
-      else throw new Error(`Unhandled opcode size: ${op}`);
+    for (const label of lineLabels) {
+      if (label in labels) {
+        throw new Error(`Duplicate label: ${label}`);
+      }
+      labels[label] = pc;
     }
+
+    if (!instruction) {
+      continue;
+    }
+
+    const [op] = tokenizeInstruction(instruction);
+    const upperOp = op.toUpperCase();
+    const code = opcodeMap[upperOp];
+    if (code == null) throw new Error(`Unknown opcode: ${upperOp}`);
+
+    pc += getInstructionSize(upperOp, code);
   }
 
   // PASS 2: emit bytecode
   const bytecode = [];
   for (const line of lines) {
-    if (line.endsWith(':')) continue;
-    const parts = line.split(/\s+/);
+    const { instruction } = splitLabels(line.text);
+    if (!instruction) continue;
+
+    const parts = tokenizeInstruction(instruction);
     const op = parts[0].toUpperCase();
     const code = opcodeMap[op];
+    validateOperandCount(op, parts, line.lineNumber);
+    sourceMap[bytecode.length] = line.lineNumber;
     bytecode.push(code);
 
     switch (code) {
@@ -134,5 +215,15 @@ export function assemble(asmCode) {
     }
   }
 
-  return bytecode;
+  return {
+    bytecode,
+    sourceMap,
+    labels,
+    diagnostics: [],
+    profileVersion: 1,
+  };
+}
+
+export function assemble(asmCode) {
+  return assembleProgram(asmCode).bytecode;
 }

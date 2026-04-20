@@ -9,5 +9,5 @@ emcc vm.c \
   -s 'ENVIRONMENT=web' \
   -s ALLOW_MEMORY_GROWTH=1 \
   -O2 \
-  -s EXPORTED_FUNCTIONS="['_run_vm','_step_vm','_get_pc','_reset_vm','_get_memory','_get_register']" \
+  -s EXPORTED_FUNCTIONS="['_run_vm','_step_vm','_get_pc','_reset_vm','_get_memory','_get_register','_get_halted','_get_last_error','_set_program_length','_get_program_length']" \
   -s EXPORTED_RUNTIME_METHODS="['ccall','cwrap','getValue','HEAPU8','HEAP32']"

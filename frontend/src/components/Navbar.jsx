@@ -1,12 +1,10 @@
-// src/components/Navbar.jsx
 import { useState, useEffect } from 'react';
-import { FaGithub, FaMoon, FaSun, FaBookOpen, FaFileAlt } from 'react-icons/fa';
+import { FaGithub, FaMoon, FaSun } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 
-export default function Navbar() {
+export default function Navbar({ productName, activeRoute, links, onNavigate }) {
   const [theme, setTheme] = useState('dark');
 
-  // Hydrate theme on mount
   useEffect(() => {
     const saved = localStorage.getItem('theme');
     const initial = saved
@@ -18,7 +16,6 @@ export default function Navbar() {
     setTheme(initial);
   }, []);
 
-  // Toggle light/dark
   const toggleTheme = () => {
     const next = theme === 'dark' ? 'light' : 'dark';
     document.documentElement.classList.toggle('light', next === 'light');
@@ -28,89 +25,84 @@ export default function Navbar() {
 
   return (
     <nav
-      className="
-        fixed top-0 left-0 right-0 z-50
-        px-4 py-3 md:px-14 md:py-3
-        flex justify-between items-center
-        backdrop-blur-md border-b
-      "
+      className="fixed left-0 right-0 top-0 z-50 border-b px-4 py-3 backdrop-blur-xl md:px-8"
       style={{
         backgroundColor: 'var(--navbar-bg)',
         borderColor: 'var(--navbar-border)',
       }}
     >
-      {/* Logo */}
-      <h1
-        className="font-mono font-bold transition-colors duration-200
-                   text-lg md:text-xl"
-        style={{
-          color: theme === 'dark' ? 'var(--accent)' : '#000000',
-        }}
-      >
-        retroWeb
-      </h1>
-
-
-      {/* Icons */}
-      <div className="flex items-center gap-2 md:gap-4">
-<motion.a
-  href="https://docs.google.com/document/d/1494Jkygw0XOBvxfJfcAYc1YkzIUKNvgcumMZARnapMo/edit?usp=sharing"
-  target="_blank"
-  rel="noopener noreferrer"
-  className="p-1 md:p-2 rounded transition"
-  style={{ color: 'var(--navbar-text)' }}
-  whileHover={{
-    scale: 1.2,
-    rotate: 3,
-    backgroundColor: 'var(--navbar-hover-bg)',
-  }}
-  whileTap={{ scale: 0.95 }}
-  transition={{ type: 'spring', stiffness: 300 }}
-  aria-label="Documentation"
->
-  <FaBookOpen className="w-5 h-5 md:w-6 md:h-6" />
-</motion.a>
-
-        <motion.a
-  href="https://github.com/asifrahman2003/retroweb-emulator"
-  target="_blank"
-  rel="noopener noreferrer"
-  className="p-1 md:p-2 rounded transition"
-  style={{ color: 'var(--navbar-text)' }}
-  whileHover={{
-    scale: 1.25,
-    rotate: -5,
-    backgroundColor: 'var(--navbar-hover-bg)',
-  }}
-  whileTap={{ scale: 0.95 }}
-  transition={{ type: 'spring', stiffness: 300 }}
->
-  <FaGithub className="w-5 h-5 md:w-6 md:h-6" />
-</motion.a>
-
-        {/* Theme Toggle */}
+      <div className="mx-auto flex max-w-7xl flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <button
-          onClick={toggleTheme}
-          aria-label="Toggle theme"
-          className={`
-            p-1 md:p-2 rounded-full transition-all duration-200
-            ${theme === 'dark'
-              ? 'border-2 border-[var(--accent)] hover:border-[var(--accent-hover)]'
-              : 'border-2 border-black hover:border-gray-600'
-            }
-            hover:bg-[var(--navbar-hover-bg)]
-          `}
-          style={{
-            backgroundColor: 'var(--panel)',
-            color: 'var(--navbar-text)',
-          }}
+          type="button"
+          onClick={() => onNavigate('landing')}
+          className="flex items-center gap-3 border-none bg-transparent px-0 py-0 text-left shadow-none"
         >
-          {theme === 'dark' ? (
-            <FaSun className="w-4 h-4 md:w-5 md:h-5" />
-          ) : (
-            <FaMoon className="w-4 h-4 md:w-5 md:h-5" />
-          )}
+          <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-[var(--accent)] bg-[var(--accent-soft)] text-lg font-bold text-[var(--accent)]">
+            rw
+          </div>
+          <div>
+            <h1
+              className="text-lg font-semibold tracking-wide md:text-xl"
+              style={{ color: theme === 'dark' ? 'var(--heading-color)' : '#111111' }}
+            >
+              {productName}
+            </h1>
+            <p className="text-xs uppercase tracking-[0.22em] text-[var(--text-muted)]">
+              Low-Level Learning Platform
+            </p>
+          </div>
         </button>
+
+        <div className="flex flex-1 flex-wrap items-center gap-2 lg:justify-center">
+          {links.map((link) => {
+            const active = link.id === activeRoute;
+            return (
+              <button
+                key={link.id}
+                type="button"
+                onClick={() => onNavigate(link.id)}
+                className={`rounded-full px-4 py-2 text-sm transition ${
+                  active
+                    ? 'border-[var(--accent)] bg-[var(--accent-soft)] text-[var(--text-main)]'
+                    : 'border-[var(--panel-border)] bg-[var(--panel)] text-[var(--text-muted)] hover:border-[var(--accent)] hover:text-[var(--text-main)]'
+                }`}
+              >
+                {link.label}
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="flex items-center gap-2 md:gap-3">
+          <motion.a
+            href="https://github.com/asifrahman2003/retroweb-emulator"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-full p-2 transition"
+            style={{ color: 'var(--navbar-text)' }}
+            whileHover={{
+              scale: 1.1,
+              backgroundColor: 'var(--navbar-hover-bg)',
+            }}
+            whileTap={{ scale: 0.96 }}
+            transition={{ type: 'spring', stiffness: 300 }}
+            aria-label="GitHub repository"
+          >
+            <FaGithub className="h-5 w-5" />
+          </motion.a>
+
+          <button
+            onClick={toggleTheme}
+            aria-label="Toggle theme"
+            className="rounded-full border-2 border-[var(--panel-border)] p-2 transition hover:border-[var(--accent)] hover:bg-[var(--navbar-hover-bg)]"
+            style={{
+              backgroundColor: 'var(--panel)',
+              color: 'var(--navbar-text)',
+            }}
+          >
+            {theme === 'dark' ? <FaSun className="h-4 w-4" /> : <FaMoon className="h-4 w-4" />}
+          </button>
+        </div>
       </div>
     </nav>
   );

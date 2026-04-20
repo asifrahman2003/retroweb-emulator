@@ -1,82 +1,71 @@
 @import "tailwindcss";
 
-/* 2. Theme & UI variables */
-
-/* Dark mode = default */
 :root {
-  /* Typography */
-  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: "Avenir Next", "Segoe UI", sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
-  /* Core colors */
-  --bg: #0f111a;
-  --panel: #1c1e26;
+  --bg: #000000;
+  --panel: rgba(10, 10, 12, 0.94);
+  --panel-soft: rgba(12, 12, 15, 0.86);
   --accent: #f97316;
   --accent-hover: #fb923c;
-  --text-main: rgba(255, 255, 255, 0.87);
-  --text-muted: #a0aec0;
-  --output-bg: #000000;
+  --accent-soft: rgba(249, 115, 22, 0.12);
+  --text-main: rgba(246, 248, 253, 0.94);
+  --text-muted: #94a3b8;
+  --output-bg: rgba(0, 0, 0, 0.92);
 
-  /* Window styling */
-  --window-bg: var(--panel);
-  --window-header-bg: #111317;
+  --window-bg: rgba(10, 10, 12, 0.96);
+  --window-header-bg: rgba(18, 18, 20, 0.98);
 
-  /* New: border & title‐text for MacWindow */
-  --window-border: rgba(255, 255, 255, 0.1);
+  --window-border: rgba(148, 163, 184, 0.2);
   --window-title-text: #cbd5e1;
 
-  /* Navbar styling */
-  --navbar-bg: rgba(0, 0, 0, 0.3);
-  --navbar-border: rgba(255, 255, 255, 0.1);
+  --navbar-bg: rgba(0, 0, 0, 0.88);
+  --navbar-border: rgba(148, 163, 184, 0.14);
   --navbar-title: var(--accent);
-  --navbar-text: #cbd5e1;
-  --navbar-hover-bg: rgba(255, 255, 255, 0.1);
+  --navbar-text: #d6deeb;
+  --navbar-hover-bg: rgba(148, 163, 184, 0.12);
 
-  /* Rendering hints */
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  /* Browser color-scheme hint */
   color-scheme: dark;
 
   --heading-color: var(--accent);
-  --panel-border: rgba(255, 255, 255, 0.1);
+  --panel-border: rgba(148, 163, 184, 0.18);
 }
 
-/* Light-mode overrides */
 html.light {
-  /* Core colors */
-  --bg: #f7f7f7;
-  --panel: #ffffff;
-  --accent: #d97706;
-  --accent-hover: #f59e0b;
-  --text-main: #1a1a1a;
-  --text-muted: #4a5568;
-  --output-bg: #ffffff;
+  --bg: #f4efe6;
+  --panel: rgba(255, 252, 247, 0.92);
+  --panel-soft: rgba(255, 247, 237, 0.74);
+  --accent: #c75c0c;
+  --accent-hover: #dd6b20;
+  --accent-soft: rgba(199, 92, 12, 0.12);
+  --text-main: #1f2937;
+  --text-muted: #5b6474;
+  --output-bg: rgba(255, 255, 255, 0.84);
 
-  --window-bg: #ffffff;
-  --window-header-bg: #e5e7eb;
+  --window-bg: rgba(255, 252, 247, 0.94);
+  --window-header-bg: rgba(241, 236, 229, 0.98);
 
-  /* New: lighter border & darker title text */
-  --window-border: rgba(0, 0, 0, 0.1);
-  --window-title-text: black;
+  --window-border: rgba(107, 114, 128, 0.18);
+  --window-title-text: #111827;
 
-  /* Navbar styling */
-  --navbar-bg: rgba(255, 255, 255, 0.8);
-  --navbar-border: #e5e7eb;
-  --navbar-title: #000000;
-  --navbar-text: #4b5563;
+  --navbar-bg: rgba(255, 250, 245, 0.84);
+  --navbar-border: rgba(107, 114, 128, 0.16);
+  --navbar-title: #111111;
+  --navbar-text: #374151;
   --navbar-hover-bg: rgba(0, 0, 0, 0.05);
 
   color-scheme: light;
-  --heading-color: #000000;
-  --panel-border: rgba(0, 0, 0, 0.1);
+  --heading-color: #8b3f07;
+  --panel-border: rgba(107, 114, 128, 0.18);
 }
 
-/* 3. Global resets & layout */
 html,
 body {
   width: 100%;
@@ -89,9 +78,9 @@ body {
 }
 
 body {
-  background-color: var(--bg);
+  background: #000000;
   color: var(--text-main);
-  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: "Avenir Next", "Segoe UI", sans-serif;
 }
 
 #root {
@@ -140,7 +129,6 @@ button:hover {
   background-color: transparent;
 }
 
-/* 6. Editor line-highlight */
 .currentLineHighlight {
   background-color: rgba(255, 235, 59, 0.3);
 }

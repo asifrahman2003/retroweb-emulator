@@ -1,35 +1,30 @@
 // src/components/MemoryViewer.jsx
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import MacWindow from './MacWindow'
+import { FRAMEBUFFER_START, MEM_SIZE, formatVmAddress } from '../vmLayout'
 
-export default function MemoryViewer({ vmInstance, version }) {
+export default function MemoryViewer({ memorySnapshot, pc, version }) {
   const [showFull,    setShowFull]    = useState(false)
   const [memorySlice, setMemorySlice] = useState(new Uint8Array())
-  const [prevMemory,  setPrevMemory]  = useState(new Uint8Array())
+  const prevMemoryRef = useRef(new Uint8Array())
 
-  // 1) Pointer into WASM heap where your C `memory[0]` lives
-  const memPtr = vmInstance._get_memory()
-  // 2) The live HEAPU8 view
-  const heap   = vmInstance.HEAPU8
-
-  const bytesToShow = showFull ? 512 : 128
+  const bytesToShow = showFull ? MEM_SIZE : 128
   const bytesPerRow = 8
-  // PC inside your C memory[]
-  const pcOffset = vmInstance._get_pc()
 
   useEffect(() => {
-    // stash the old contents so we can highlight diffs
-    setPrevMemory(memorySlice)
-
-    // grab exactly [memPtr … memPtr+bytesToShow)
-    const liveView = heap.subarray(memPtr, memPtr + bytesToShow)
+    const nextSlice = memorySnapshot.slice(0, bytesToShow)
     // copy into a new Uint8Array so React will notice the change
-    setMemorySlice(liveView.slice())
-  }, [vmInstance, showFull, version])  // re-run whenever you toggle/showFull or bump runCount
+    setMemorySlice((previousMemory) => {
+      prevMemoryRef.current = previousMemory
+      return nextSlice
+    })
+  }, [bytesToShow, memorySnapshot, version])
 
   function getByteClass(byte, addr, idx) {
+    const prevMemory = prevMemoryRef.current
+
     // highlight the PC
-    if (addr === memPtr + pcOffset) {
+    if (addr === pc) {
       return 'bg-yellow-500 text-black font-bold'
     }
     // highlight any byte that just changed
@@ -46,7 +41,10 @@ export default function MemoryViewer({ vmInstance, version }) {
 
   return (
     <MacWindow title="Memory">
-      <div className="flex justify-end mb-2">
+      <div className="mb-2 flex items-center justify-between gap-3">
+        <p className="text-xs text-[var(--text-muted)]">
+          Program starts at {formatVmAddress(0)}. Framebuffer starts at {formatVmAddress(FRAMEBUFFER_START)}.
+        </p>
         <button
           className="text-xs text-[var(--accent)] hover:text-[var(--accent-hover)]"
           onClick={() => setShowFull(f => !f)}
@@ -55,7 +53,7 @@ export default function MemoryViewer({ vmInstance, version }) {
         </button>
       </div>
 
-      <div className="rounded-xl border border-[var(--accent)] overflow-hidden">
+      <div className="overflow-hidden rounded-lg border border-[var(--accent)]">
         <div
           className="px-3 py-1 text-xs font-mono"
           style={{
@@ -75,22 +73,18 @@ export default function MemoryViewer({ vmInstance, version }) {
               return (
                 <div key={rowIdx} className="flex items-center gap-4">
                   <div className="w-16 text-[var(--text-muted)]">
-                    {`0x${(memPtr + start)
-                      .toString(16)
-                      .padStart(4, '0')}:`}
+                    {`${formatVmAddress(start)}:`}
                   </div>
                   <div className="grid grid-cols-8 gap-1">
-                    {row.map((b, i) => {
-                      const addr = memPtr + start + i
+                    {Array.from(row).map((b, i) => {
+                      const addr = start + i
                       return (
                         <div
                           key={i}
                           className={`px-2 py-1 rounded text-center text-xs ${
                             getByteClass(b, addr, start + i)
                           }`}
-                          title={`Addr: 0x${addr
-                            .toString(16)
-                            .padStart(4, '0')} • Val: ${b}`}
+                          title={`Addr: ${formatVmAddress(addr)} • Val: ${b}`}
                         >
                           {b.toString(16).padStart(2, '0').toUpperCase()}
                         </div>
