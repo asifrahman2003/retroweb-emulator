@@ -612,13 +612,6 @@ function App() {
       : vmRuntimeState.halted
         ? 'Halted'
         : 'Ready';
-  const vmStatusClassName = !vmInstance
-    ? 'text-[var(--accent)]'
-    : vmRuntimeState.lastError !== VM_ERROR_NONE
-      ? 'text-[var(--err)]'
-      : vmRuntimeState.halted
-        ? 'text-[var(--warn)]'
-        : 'text-[var(--ok)]';
   const activeRouteMeta = routeLookup[activeRoute] ?? routeLookup.landing;
   const topNavigationLinks = primaryNavigationLinks
     .map((routeId) => routeLookup[routeId])
@@ -696,7 +689,6 @@ function App() {
         currentPc={currentPc}
         executionVersion={executionVersion}
         vmStatusLabel={vmStatusLabel}
-        vmStatusClassName={vmStatusClassName}
       />
     );
   } else if (activeRoute === 'lessons') {

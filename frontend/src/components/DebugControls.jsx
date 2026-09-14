@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useImperativeHandle } from 'react';
 import '../index.css';
-import { MEM_SIZE, NUM_REGS, VM_ERROR_NONE, describeVmError } from '../vmLayout';
+import { MEM_SIZE, VM_ERROR_NONE, describeVmError } from '../vmLayout';
 
 function applyHighlight(editor, monaco, sourceMap, currentPc, decorationsRef) {
   if (!editor || !monaco) return;
@@ -26,7 +26,6 @@ const DebugControls = React.forwardRef(function DebugControls({
   headless = false,
 }, ref) {
   const [pc, setPc] = useState(0);
-  const [registers, setRegisters] = useState(Array(NUM_REGS).fill(0));
   const decorationsRef = useRef([]);
   const hasVmError = vmRuntimeState?.lastError && vmRuntimeState.lastError !== VM_ERROR_NONE;
   const stepDisabled = !vmInstance || (!programDirty && vmRuntimeState?.halted);
@@ -46,7 +45,6 @@ const DebugControls = React.forwardRef(function DebugControls({
 
   const syncLocalState = (nextPc = vmInstance._get_pc()) => {
     setPc(nextPc);
-    setRegisters(Array.from({ length: NUM_REGS }, (_, i) => vmInstance._get_register(i)));
     applyHighlight(editor, monaco, sourceMap, nextPc, decorationsRef);
   };
 
@@ -54,7 +52,6 @@ const DebugControls = React.forwardRef(function DebugControls({
     if (!vmInstance) return;
     const currentPc = vmInstance._get_pc();
     setPc(currentPc);
-    setRegisters(Array.from({ length: NUM_REGS }, (_, i) => vmInstance._get_register(i)));
     applyHighlight(editor, monaco, sourceMap, currentPc, decorationsRef);
   }, [editor, monaco, programBytes, sourceMap, vmInstance]);
 

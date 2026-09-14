@@ -47,7 +47,6 @@ export default function WorkspacePage({
   currentPc,
   executionVersion,
   vmStatusLabel,
-  vmStatusClassName,
 }) {
   const debugRef = useRef(null);
   const [activeTab, setActiveTab] = useState('console');
