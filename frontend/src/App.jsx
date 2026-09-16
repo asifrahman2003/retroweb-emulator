@@ -1,5 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Analytics } from '@vercel/analytics/react';
 import { loadVM } from './wasm/loadVM';
 import { assembleProgram } from './assembler';
@@ -44,6 +43,7 @@ import {
   getRouteFromHash,
   platformNavigation,
 } from './platformContent';
+import { curriculumTracks } from './curriculumCatalog';
 
 const DEMO_PROGRAM = `LOAD R1 5
 ADD R2 R1 R1
@@ -54,6 +54,120 @@ const DEFAULT_EXAMPLE_ID = retroExamples[0]?.id ?? '';
 const DEFAULT_CHALLENGE_ID = retroChallenges[0]?.id ?? '';
 const primaryNavigationLinks = ['landing', 'dashboard', 'workspace', 'lessons', 'labs', 'docs'];
 const routeLookup = Object.fromEntries(flattenNavigation().map((route) => [route.id, route]));
+const exampleLookup = Object.fromEntries(retroExamples.map((example) => [example.id, example]));
+const challengeLookup = Object.fromEntries(
+  retroChallenges.map((challenge) => [challenge.id, challenge]),
+);
+const docsCommandEntries = [
+  ['introduction', 'Introduction', 'Getting started', 'retroWeb Academy overview and current VM scope.'],
+  ['first-program', 'Your first program', 'Getting started', 'Load, compute, print, and halt cleanly.'],
+  ['run-step', 'Run and step', 'Getting started', 'Use Step, Run, Reset, and state inspection.'],
+  ['overview', 'Overview', 'Architecture', 'Retro Core machine state and execution model.'],
+  ['memory-model', 'Memory model', 'Architecture', 'Addresses, values, memory cells, and framebuffer output.'],
+  ['registers', 'Registers', 'Architecture', 'R0 through R7, operands, arithmetic, and wraparound.'],
+  ['framebuffer', 'Framebuffer', 'Architecture', 'PIX, PIXR, canvas output, and memory-mapped ideas.'],
+  ['data-movement', 'Data movement', 'Instruction set', 'LOAD and STORE behavior.'],
+  ['arithmetic', 'Arithmetic', 'Instruction set', 'ADD and SUB behavior.'],
+  ['control-flow', 'Control flow', 'Instruction set', 'JZ, JMP, labels, branches, and loops.'],
+  ['system', 'System', 'Instruction set', 'PRINT, HALT, and runtime stop state.'],
+  ['loops', 'Loops', 'Cookbook', 'Loop shape, exit conditions, and PC movement.'],
+  ['debugging-errors', 'Debugging errors', 'Cookbook', 'Unknown opcodes, bad registers, and PC bounds errors.'],
+  ['drawing-pixels', 'Drawing pixels', 'Cookbook', 'PIX and PIXR examples.'],
+  ['encoding-decode', 'Encoding and decode', 'Advanced topics', 'Assembly text, opcode bytes, operands, and decode.'],
+  ['datapath-control', 'Datapath and control', 'Advanced topics', 'Value movement, control choices, ALU, and state updates.'],
+  ['stack-model', 'Stack model', 'Advanced topics', 'Planned stack pointer, PUSH, POP, overflow, and underflow behavior.'],
+  ['functions-calls', 'Functions and calls', 'Advanced topics', 'Planned CALL, RET, return addresses, and nested calls.'],
+  ['calling-conventions', 'Calling conventions', 'Advanced topics', 'Arguments, return values, caller-saved, and callee-saved rules.'],
+  ['riscv-bridge', 'RISC-V bridge', 'Advanced topics', 'RISC-V learning path, RARS, Venus, and load/store ideas.'],
+  ['mips-bridge', 'MIPS bridge', 'Advanced topics', 'MIPS learning path, MARS, SPIM, and procedure ideas.'],
+  ['pipeline-hazards', 'Pipelining and hazards', 'Advanced topics', 'Pipeline stages, data hazards, control hazards, and stalls.'],
+  ['x86-reading', 'x86-64 reading path', 'Advanced topics', 'Advanced real-world reading path for x86-64.'],
+  ['arm-reading', 'Arm and AArch64 path', 'Advanced topics', 'Advanced Arm learning path and official guide direction.'],
+  ['external-tooling', 'External tooling', 'Advanced topics', 'RARS, Venus, MARS, SPIM, NASM, and external workflows.'],
+];
+const commandSearchEntries = [
+  ...flattenNavigation().map((route) => ({
+    id: `route-${route.id}`,
+    kind: 'route',
+    routeId: route.id,
+    group: 'Page',
+    label: route.label,
+    description: route.blurb,
+    keywords: [route.id],
+  })),
+  ...curriculumTracks.flatMap((track) =>
+    track.courses.flatMap((course) =>
+      course.modules.map((module) => ({
+        id: `lesson-${module.id}`,
+        kind: 'lesson',
+        lessonId: module.id,
+        group: 'Lesson',
+        label: module.title,
+        description: `${track.label} · ${course.title.replace(/^Course \d+ · /, '')}`,
+        keywords: [
+          track.stage,
+          track.label,
+          course.title,
+          module.status,
+          module.summary,
+          ...(module.goals ?? []),
+          ...(module.lesson?.vocabulary ?? []),
+        ],
+      })),
+    ),
+  ),
+  ...docsCommandEntries.map(([docId, label, section, description]) => ({
+    id: `doc-${docId}`,
+    kind: 'doc',
+    docId,
+    group: 'Doc',
+    label,
+    description: `${section} · ${description}`,
+    keywords: [section, description],
+  })),
+  ...retroExamples.map((example) => ({
+    id: `example-${example.id}`,
+    kind: 'example',
+    exampleId: example.id,
+    group: 'Demo',
+    label: example.title,
+    description: example.description,
+    keywords: [example.difficulty, ...(example.concepts ?? [])],
+  })),
+  ...retroChallenges.map((challenge) => ({
+    id: `challenge-${challenge.id}`,
+    kind: 'challenge',
+    challengeId: challenge.id,
+    group: 'Lab',
+    label: challenge.title,
+    description: challenge.prompt,
+    keywords: challenge.hints ?? [],
+  })),
+];
+
+function createRouteHash(routeId, query = {}) {
+  const params = new URLSearchParams();
+
+  Object.entries(query).forEach(([key, value]) => {
+    if (value) {
+      params.set(key, value);
+    }
+  });
+
+  const queryString = params.toString();
+  return `#/${routeId}${queryString ? `?${queryString}` : ''}`;
+}
+
+function commandMatches(entry, query) {
+  if (!query) {
+    return true;
+  }
+
+  return [entry.label, entry.description, entry.group, ...(entry.keywords ?? [])]
+    .join(' ')
+    .toLowerCase()
+    .includes(query);
+}
 
 function hasSelection(entries, selectionId) {
   return entries.some((entry) => entry.id === selectionId);
@@ -151,9 +265,12 @@ function App() {
   const initialWorkspaceRef = useRef(getInitialWorkspace());
   const initialWorkspace = initialWorkspaceRef.current;
   const vmLogBufferRef = useRef([]);
+  const commandInputRef = useRef(null);
   const [activeRoute, setActiveRoute] = useState(() =>
     getRouteFromHash(globalThis.location?.hash ?? ''),
   );
+  const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
+  const [commandQuery, setCommandQuery] = useState('');
   const [vmInstance, setVmInstance] = useState(null);
   const [input, setInput] = useState(initialWorkspace.input);
   const [isAssembly, setIsAssembly] = useState(initialWorkspace.isAssembly);
@@ -195,6 +312,34 @@ function App() {
       window.removeEventListener('hashchange', handleHashChange);
     };
   }, []);
+
+  useEffect(() => {
+    const handleCommandShortcut = (event) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault();
+        setCommandQuery('');
+        setCommandPaletteOpen(true);
+      } else if (event.key === 'Escape') {
+        setCommandPaletteOpen(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleCommandShortcut);
+
+    return () => {
+      window.removeEventListener('keydown', handleCommandShortcut);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!commandPaletteOpen) {
+      return;
+    }
+
+    window.setTimeout(() => {
+      commandInputRef.current?.focus();
+    }, 0);
+  }, [commandPaletteOpen]);
 
   useEffect(() => {
     saveWorkspaceState({
@@ -371,9 +516,9 @@ function App() {
     };
   };
 
-  const navigateTo = (routeId) => {
+  const navigateTo = (routeId, options = {}) => {
     const nextRoute = routeLookup[routeId] ? routeId : 'landing';
-    const nextHash = `#/${nextRoute}`;
+    const nextHash = createRouteHash(nextRoute, options.query);
 
     if (window.location.hash === nextHash) {
       setActiveRoute(nextRoute);
@@ -417,6 +562,36 @@ function App() {
       assemblyMode: challenge.assemblyMode ?? true,
     });
     navigateTo('workspace');
+  };
+
+  const filteredCommandEntries = useMemo(() => {
+    const normalizedCommandQuery = commandQuery.trim().toLowerCase();
+
+    return commandSearchEntries
+      .filter((entry) => commandMatches(entry, normalizedCommandQuery))
+      .slice(0, 10);
+  }, [commandQuery]);
+
+  const openCommandPalette = () => {
+    setCommandQuery('');
+    setCommandPaletteOpen(true);
+  };
+
+  const runCommand = (entry) => {
+    if (entry.kind === 'route') {
+      navigateTo(entry.routeId);
+    } else if (entry.kind === 'lesson') {
+      navigateTo('lessons', { query: { lesson: entry.lessonId } });
+    } else if (entry.kind === 'doc') {
+      navigateTo('docs', { query: { doc: entry.docId } });
+    } else if (entry.kind === 'example') {
+      openExampleInWorkspace(exampleLookup[entry.exampleId]);
+    } else if (entry.kind === 'challenge') {
+      openChallengeInWorkspace(challengeLookup[entry.challengeId]);
+    }
+
+    setCommandPaletteOpen(false);
+    setCommandQuery('');
   };
 
   const handleRunVM = () => {
@@ -759,72 +934,123 @@ function App() {
       />
 
       <main className="min-h-screen px-0 pb-12 pt-[66px] text-[var(--text-main)]">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeRoute}
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.22, ease: 'easeOut' }}
-          >
-            {activeRoute === 'landing' ? (
-              <div className="mx-auto max-w-[1480px] px-4 py-7 md:px-6">
-                {pageContent}
-              </div>
-            ) : (
-              <div className="mx-auto max-w-[1480px] px-4 py-7 md:px-6">
-                <div className="rw-app-frame">
-                  <AppSidebar
-                    sections={platformNavigation}
-                    activeRoute={activeRoute}
-                    onNavigate={navigateTo}
-                  />
-                  <section className="rw-app-main">
-                    <div className="rw-app-topbar">
-                      <div className="rw-crumbs">
-                        <span>Home</span>
-                        <span>/</span>
-                        <span style={{ color: 'var(--ink)' }}>{activeRouteMeta.label}</span>
-                      </div>
-                      <div className="rw-search">
-                        <span>Cmd+K</span>
-                        <span>search lessons, labs, docs...</span>
-                      </div>
-                      <div className="rw-top-actions">
-                        <span className="rw-chip rw-chip-accent">VM · {vmStatusLabel}</span>
-                      </div>
-                    </div>
-                    <div className="p-4 md:p-5 lg:p-6">{pageContent}</div>
-                  </section>
+        {activeRoute === 'landing' ? (
+          <div className="mx-auto max-w-[1480px] px-4 py-7 md:px-6">
+            {pageContent}
+          </div>
+        ) : (
+          <div className="mx-auto max-w-[1480px] px-4 py-7 md:px-6">
+            <div className="rw-app-frame">
+              <AppSidebar
+                sections={platformNavigation}
+                activeRoute={activeRoute}
+                onNavigate={navigateTo}
+              />
+              <section className="rw-app-main">
+                <div className="rw-app-topbar">
+                  <div className="rw-crumbs">
+                    <span>Home</span>
+                    <span>/</span>
+                    <span style={{ color: 'var(--ink)' }}>{activeRouteMeta.label}</span>
+                  </div>
+                  <button
+                    type="button"
+                    className="rw-search rw-command-trigger"
+                    onClick={openCommandPalette}
+                    aria-label="Open command search"
+                  >
+                    <span>Cmd+K</span>
+                    <span>search lessons, labs, docs...</span>
+                  </button>
+                  <div className="rw-top-actions">
+                    <span className="rw-chip rw-chip-accent">VM · {vmStatusLabel}</span>
+                  </div>
                 </div>
-              </div>
-            )}
-          </motion.div>
-        </AnimatePresence>
+                <div className="p-4 md:p-5 lg:p-6">{pageContent}</div>
+              </section>
+            </div>
+          </div>
+        )}
       </main>
 
-      <AnimatePresence>
-        {easterEggActive && (
-          <motion.div
-            className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            transition={{ type: 'spring', stiffness: 200, damping: 20 }}
+      {commandPaletteOpen && (
+        <div className="fixed inset-0 z-50 flex items-start justify-center px-4 pt-24">
+          <button
+            type="button"
+            aria-label="Close command search"
+            className="absolute inset-0 cursor-default border-0 bg-black/45"
+            onClick={() => setCommandPaletteOpen(false)}
+          />
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Command search"
+            className="relative w-full max-w-2xl overflow-hidden rounded-[8px] border border-[var(--panel-border)] bg-[var(--panel)] shadow-[var(--shadow-card)]"
           >
-            <motion.div
-              className="bg-gradient-to-r from-black via-zinc-900 to-black border border-[var(--accent)] text-[var(--text-main)] font-mono px-6 py-4 rounded-xl shadow-xl"
-              initial={{ rotate: -2 }}
-              animate={{ rotate: [2, -2, 2], repeat: Infinity, duration: 0.8 }}
-            >
-              Debug Mode Activated -{' '}
-              <span className="font-bold text-[var(--accent)]">
-                RETRO CORE UNLOCKED
-              </span>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            <div className="border-b border-[var(--line)] p-3">
+              <div className="flex items-center gap-3 rounded-[6px] border border-[var(--line)] bg-[var(--panel-soft)] px-3 py-2">
+                <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-[var(--ink-3)]">
+                  Search
+                </span>
+                <input
+                  ref={commandInputRef}
+                  value={commandQuery}
+                  onChange={(event) => setCommandQuery(event.target.value)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' && filteredCommandEntries[0]) {
+                      event.preventDefault();
+                      runCommand(filteredCommandEntries[0]);
+                    }
+                  }}
+                  className="min-w-0 flex-1 border-0 bg-transparent text-sm text-[var(--text-main)] outline-none"
+                  placeholder="Type a page, lesson, doc, demo, or lab..."
+                />
+                <span className="font-mono text-[11px] text-[var(--ink-3)]">Esc</span>
+              </div>
+            </div>
+
+            <div className="max-h-[440px] overflow-y-auto p-2">
+              {filteredCommandEntries.length ? (
+                filteredCommandEntries.map((entry) => (
+                  <button
+                    key={entry.id}
+                    type="button"
+                    onClick={() => runCommand(entry)}
+                    className="grid w-full grid-cols-[84px_minmax(0,1fr)] gap-3 rounded-[6px] border-0 bg-transparent px-3 py-3 text-left hover:bg-[var(--panel-soft)]"
+                  >
+                    <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-[var(--accent)]">
+                      {entry.group}
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block truncate text-sm font-semibold text-[var(--text-main)]">
+                        {entry.label}
+                      </span>
+                      <span className="mt-1 block line-clamp-2 text-xs leading-5 text-[var(--text-muted)]">
+                        {entry.description}
+                      </span>
+                    </span>
+                  </button>
+                ))
+              ) : (
+                <div className="p-6 text-sm text-[var(--text-muted)]">
+                  No matching page, lesson, doc, demo, or lab.
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {easterEggActive && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none">
+          <div className="bg-gradient-to-r from-black via-zinc-900 to-black border border-[var(--accent)] text-[var(--text-main)] font-mono px-6 py-4 rounded-xl shadow-xl">
+            Debug Mode Activated -{' '}
+            <span className="font-bold text-[var(--accent)]">
+              RETRO CORE UNLOCKED
+            </span>
+          </div>
+        </div>
+      )}
 
       <Footer />
       <Analytics />

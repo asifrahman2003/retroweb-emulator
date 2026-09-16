@@ -9,7 +9,7 @@ export const retroArchitectureProfile = {
   name: 'Retro Core',
   level: 'Starter VM',
   summary:
-    'A compact teaching VM for learning registers, control flow, memory writes, and framebuffer output before moving to more complex architectures.',
+    'A small VM for practicing registers, jumps, memory writes, and framebuffer output.',
   learningGoals: [
     'Trace instruction execution one step at a time.',
     'See how register values flow into memory and output.',
@@ -54,6 +54,37 @@ HALT`,
     concepts: ['labels', 'jumps', 'control-flow'],
   },
   {
+    id: 'countdown-loop',
+    title: 'Countdown Loop',
+    difficulty: 'Core',
+    code: `LOAD R0 3
+LOAD R1 1
+loop: PRINT R0
+SUB R0 R0 R1
+JZ R0 done
+JMP loop
+done: PRINT R0
+HALT`,
+    description:
+      'Uses a label, SUB, JZ, and JMP to count down until the register reaches zero.',
+    concepts: ['loops', 'labels', 'control-flow'],
+  },
+  {
+    id: 'branch-skip-print',
+    title: 'Skip And Store',
+    difficulty: 'Review',
+    code: `LOAD R0 0
+LOAD R1 42
+JZ R0 safe
+LOAD R1 99
+safe: STORE R1 32
+PRINT R1
+HALT`,
+    description:
+      'Branches around a trap instruction, stores the safe value, and prints the result.',
+    concepts: ['branches', 'memory', 'review'],
+  },
+  {
     id: 'pixel-immediate',
     title: 'Plot A Pixel',
     difficulty: 'Core',
@@ -63,13 +94,26 @@ HALT`,
     concepts: ['framebuffer', 'graphics', 'immediates'],
   },
   {
+    id: 'pixel-registers',
+    title: 'Plot From Registers',
+    difficulty: 'Core',
+    code: `LOAD R0 2
+LOAD R1 3
+LOAD R2 4
+PIXR R0 R1 R2
+HALT`,
+    description:
+      'Loads x, y, and color into registers, then draws through PIXR.',
+    concepts: ['framebuffer', 'registers', 'graphics'],
+  },
+  {
     id: 'bad-opcode-demo',
     title: 'Decode Error Demo',
     difficulty: 'Debug',
     assemblyMode: false,
     code: '42',
     description:
-      'Runs a raw byte that is not a valid opcode so you can observe the VM halt with an explicit error state.',
+      'Runs one invalid byte so you can see how the VM reports an unknown opcode.',
     concepts: ['raw-bytes', 'errors', 'debugging'],
   },
   {
@@ -79,7 +123,7 @@ HALT`,
     assemblyMode: false,
     code: '1 8 1',
     description:
-      'Uses an out-of-range register index in raw-byte mode so you can observe a runtime safety failure that is different from an unknown opcode.',
+      'Uses register index 8 in raw-byte mode so you can see the register safety check fail.',
     concepts: ['raw-bytes', 'registers', 'errors'],
   },
   {
@@ -89,7 +133,7 @@ HALT`,
     assemblyMode: false,
     code: '7 8',
     description:
-      'Jumps past the loaded program length so you can observe the VM reject instruction targets that leave the loaded program region.',
+      'Jumps beyond the loaded program so you can see the VM stop with a bounds error.',
     concepts: ['raw-bytes', 'jumps', 'bounds'],
   },
 ];
@@ -143,8 +187,8 @@ HALT`,
   },
   {
     id: 'challenge-bad-opcode',
-    title: 'Trigger A VM Error',
-    prompt: 'Load a raw byte sequence that causes an unknown opcode error and leaves the VM in an error state.',
+    title: 'Unknown Opcode',
+    prompt: 'Load raw bytes that make the VM stop on an unknown opcode.',
     assemblyMode: false,
     starterCode: '42',
     hints: [
@@ -160,8 +204,8 @@ HALT`,
   },
   {
     id: 'challenge-bad-register',
-    title: 'Trigger A Safety Error',
-    prompt: 'Load a raw byte sequence that tries to access an invalid register so the VM reports a register safety error.',
+    title: 'Bad Register',
+    prompt: 'Load raw bytes that try to use an invalid register.',
     assemblyMode: false,
     starterCode: '1 8 1',
     hints: [
@@ -178,7 +222,7 @@ HALT`,
   {
     id: 'challenge-program-bounds',
     title: 'Jump Past The Program',
-    prompt: 'Load a raw byte sequence that jumps beyond the loaded program length so the VM reports a PC out-of-bounds error.',
+    prompt: 'Load raw bytes that jump beyond the loaded program length.',
     assemblyMode: false,
     starterCode: '7 8',
     hints: [

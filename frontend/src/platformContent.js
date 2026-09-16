@@ -1,5 +1,5 @@
 export const PLATFORM_NAME = 'retroWeb Academy';
-export const PLATFORM_TAGLINE = 'Learn low-level systems by stepping through code until the machine makes sense.';
+export const PLATFORM_TAGLINE = 'Learn assembly programming in the browser, one lesson at a time.';
 
 export const platformNavigation = [
   {
@@ -8,7 +8,7 @@ export const platformNavigation = [
       {
         id: 'landing',
         label: 'Overview',
-        blurb: 'Product story, value proposition, and platform map.',
+        blurb: 'What the academy is and where to start.',
       },
     ],
   },
@@ -18,7 +18,7 @@ export const platformNavigation = [
       {
         id: 'dashboard',
         label: 'Dashboard',
-        blurb: 'Resume learning, recent work, and recommended next steps.',
+        blurb: 'Resume work and see recent progress.',
       },
       {
         id: 'workspace',
@@ -28,32 +28,32 @@ export const platformNavigation = [
       {
         id: 'lessons',
         label: 'Lessons',
-        blurb: 'Structured learning paths, architecture tracks, and modules.',
+        blurb: 'Course topics and starter lessons.',
       },
       {
         id: 'labs',
         label: 'Labs',
-        blurb: 'Hands-on exercises, checkpoints, and graded challenge queues.',
+        blurb: 'Practice problems with local checks.',
       },
       {
         id: 'reports',
         label: 'Reports',
-        blurb: 'Execution reviews, runtime traces, and exportable summaries.',
+        blurb: 'Review the latest run state.',
       },
       {
         id: 'programs',
         label: 'Programs',
-        blurb: 'Saved drafts, starter templates, and reusable code assets.',
+        blurb: 'Saved code and starter examples.',
       },
       {
         id: 'progress',
         label: 'Progress',
-        blurb: 'Mastery map, completion stats, and milestone tracking.',
+        blurb: 'Lab completion and topic practice.',
       },
       {
         id: 'docs',
         label: 'Docs',
-        blurb: 'ISA references, debugger guides, and interpretation help.',
+        blurb: 'Instruction reference and examples.',
       },
     ],
   },
@@ -63,7 +63,7 @@ export const platformNavigation = [
       {
         id: 'instructor',
         label: 'Instructor',
-        blurb: 'Classroom analytics, assignments, and content operations.',
+        blurb: 'Classroom view and assignment drafts.',
       },
     ],
   },
@@ -73,7 +73,7 @@ export const platformNavigation = [
       {
         id: 'settings',
         label: 'Settings',
-        blurb: 'Editor defaults, runtime preferences, and future integrations.',
+        blurb: 'Editor, runtime, and account options.',
       },
     ],
   },
@@ -81,35 +81,35 @@ export const platformNavigation = [
 
 export const landingCapabilities = [
   {
-    title: 'Visual Execution',
-    description: 'Step through every instruction and inspect how registers, memory, and framebuffer output evolve.',
+    title: 'Step-By-Step Runs',
+    description: 'Run one instruction at a time and see registers, memory, and pixels update.',
   },
   {
-    title: 'Guided Curriculum',
-    description: 'Blend lessons, labs, and assessments so students move from toy machines into real architectures.',
+    title: 'Guided Lessons',
+    description: 'Start with the small Retro Core VM before moving into MIPS and CPU topics.',
   },
   {
-    title: 'Practice at Scale',
-    description: 'Support saved programs, challenge validation, progress tracking, and future classroom workflows.',
+    title: 'Practice Checks',
+    description: 'Use starter programs, save your work, and check answers against VM state.',
   },
   {
-    title: 'Architecture Tracks',
-    description: 'Start with Retro Core now, then expand into MIPS, RISC-V, x86, and systems debugging later.',
+    title: 'More Tracks Later',
+    description: 'Retro Core is live now. MIPS, CPU internals, and pipeline lessons can build on it.',
   },
 ];
 
 export const landingUseCases = [
   {
     title: 'Computer Architecture Courses',
-    description: 'Use short programs and visible machine state to explain fetch-decode-execute, control flow, and memory writes.',
+    description: 'Use short programs and visible state to explain registers, memory, branches, and output.',
   },
   {
-    title: 'Self-Guided Systems Learning',
-    description: 'Give learners a browser-first sandbox where they can tinker, break things, and recover quickly.',
+    title: 'Self-Guided Practice',
+    description: 'Try code in the browser without setting up a local assembler or simulator.',
   },
   {
-    title: 'Instructor-Led Labs',
-    description: 'Assign starter code, validate results, and review execution traces without local toolchain setup.',
+    title: 'Class Labs',
+    description: 'Share starter code, check results, and review what changed during a run.',
   },
 ];
 
@@ -117,17 +117,17 @@ export const learningPathBlueprint = [
   {
     title: 'Retro Core',
     stage: 'Live',
-    description: 'Teach registers, jumps, memory stores, framebuffer writes, and debugging fundamentals.',
+    description: 'Practice registers, jumps, memory stores, pixel output, and debugging basics.',
   },
   {
     title: 'MIPS Track',
     stage: 'Planned',
-    description: 'Introduce a real ISA with structured stepping, breakpoints, and clearer architecture transfer.',
+    description: 'Connect the Retro Core ideas to a real load/store instruction set.',
   },
   {
     title: 'Systems Lab',
     stage: 'Planned',
-    description: 'Expand toward OS-oriented exercises, calling conventions, and reverse-engineering habits.',
+    description: 'Add stack work, calling conventions, and lower-level debugging exercises.',
   },
 ];
 
@@ -157,7 +157,7 @@ export const docsReferenceSections = [
     items: [
       'Challenges validate register state, memory writes, framebuffer cells, and runtime error conditions.',
       'Saved programs persist locally for now and can become cloud-backed later.',
-      'Reports should eventually capture trace, memory diffs, and rubric-aligned feedback.',
+      'Reports can grow into trace logs, memory diffs, and challenge feedback.',
     ],
   },
 ];
@@ -165,19 +165,19 @@ export const docsReferenceSections = [
 export const settingsBlueprint = [
   {
     title: 'Editor Defaults',
-    description: 'Theme, font size, line wrapping, starter language mode, and onboarding hints.',
+    description: 'Theme, font size, line wrapping, default mode, and helper text.',
   },
   {
     title: 'Runtime Defaults',
-    description: 'Auto-reset behavior, stepping speed, memory pane density, and future breakpoint preferences.',
+    description: 'Auto-reset behavior, stepping speed, memory density, and breakpoint options.',
   },
   {
     title: 'Learning Preferences',
-    description: 'Difficulty track, lesson recommendations, accessibility settings, and notification rules.',
+    description: 'Difficulty, lesson suggestions, accessibility settings, and reminders.',
   },
   {
     title: 'Integrations',
-    description: 'Supabase auth, LMS sync, assignment exports, and API-backed content management later.',
+    description: 'Account login, class exports, and shared content can be added later.',
   },
 ];
 
@@ -191,5 +191,6 @@ export function isValidRoute(routeId) {
 
 export function getRouteFromHash(hash = '') {
   const normalized = hash.replace(/^#\/?/, '').trim();
-  return isValidRoute(normalized) ? normalized : 'landing';
+  const routeId = normalized.split(/[/?#]/)[0];
+  return isValidRoute(routeId) ? routeId : 'landing';
 }

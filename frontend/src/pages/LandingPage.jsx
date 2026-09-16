@@ -9,8 +9,8 @@ import {
 } from '../platformContent';
 
 const productStats = [
-  ['42', 'lessons planned'],
-  ['60+', 'labs mapped'],
+  ['42', 'lesson slots'],
+  ['60+', 'lab ideas'],
   ['WASM', 'runtime core'],
 ];
 
@@ -34,7 +34,7 @@ function ProductPreview() {
   });
 
   return (
-    <MacWindow title="retroWeb · workspace" className="shadow-[var(--shadow-card)]">
+    <MacWindow title="retroWeb Academy · workspace" className="shadow-[var(--shadow-card)]">
       <div className="grid min-h-[286px] gap-px overflow-hidden rounded-[5px] bg-[#2a2c30] md:grid-cols-[1fr_1.35fr_1fr]">
         <div className="bg-[#141518] p-3">
           <div className="font-mono text-[10px] uppercase tracking-[0.1em] text-[#7a8590]">
@@ -103,8 +103,8 @@ export default function LandingPage({ onNavigate }) {
     <div className="space-y-10">
       <section className="rw-frame">
         <div className="rw-frame-label">
-          <span>MARKETING · DESKTOP</span>
-          <span>landing</span>
+          <span>RETROWEB HOME</span>
+          <span>overview</span>
         </div>
 
         <div className="grid gap-10 p-6 lg:grid-cols-[1.05fr_1.25fr] lg:items-center lg:p-8">
@@ -116,8 +116,8 @@ export default function LandingPage({ onNavigate }) {
               </h1>
               <p className="max-w-xl text-xl leading-8 text-[var(--ink)]">{PLATFORM_TAGLINE}</p>
               <p className="max-w-xl text-sm leading-7 text-[var(--text-muted)]">
-                Browser-native emulator, guided curriculum, labs, saved programs, and runtime
-                inspection in one workspace. No local toolchain required.
+                A browser workspace for writing tiny programs, stepping through them, and seeing
+                exactly what changed. No local assembler required.
               </p>
             </div>
 
@@ -158,7 +158,7 @@ export default function LandingPage({ onNavigate }) {
           <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-center gap-5 text-center font-mono text-[11px] uppercase tracking-[0.08em] text-[var(--ink-2)]">
             <span className="text-[var(--ink-3)]">Built for</span>
             <span>CS students</span>
-            <span>systems learners</span>
+            <span>systems classes</span>
             <span>architecture beginners</span>
             <span>instructors</span>
           </div>
@@ -169,7 +169,7 @@ export default function LandingPage({ onNavigate }) {
             <div>
               <div className="rw-eyebrow">Curriculum</div>
               <h2 className="mt-1 text-2xl font-semibold text-[var(--heading-color)]">
-                Tracks that scale with you
+                Pick a path
               </h2>
             </div>
             <span className="font-mono text-[11px] text-[var(--ink-3)]">
@@ -205,7 +205,7 @@ export default function LandingPage({ onNavigate }) {
               What's in the box
             </h2>
             <span className="font-mono text-[11px] text-[var(--ink-3)]">
-              product pillars
+              core tools
             </span>
           </div>
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -242,7 +242,7 @@ export default function LandingPage({ onNavigate }) {
             </div>
           </div>
 
-          <MacWindow title="Platform pages">
+          <MacWindow title="App sections">
             <div className="grid gap-2">
               {scaffoldPages.slice(0, 8).map((page) => (
                 <button
@@ -264,9 +264,9 @@ export default function LandingPage({ onNavigate }) {
 
         <div className="bg-[var(--ink)] px-6 py-12 text-center text-[var(--panel)]">
           <div className="mx-auto max-w-xl">
-            <h2 className="text-3xl font-semibold">See the machine for yourself.</h2>
+            <h2 className="text-3xl font-semibold">Open the VM and try it.</h2>
             <p className="mt-3 text-sm text-[#cfc8bb]">
-              Free to start, open source, and ready in the browser.
+              It runs in the browser and saves drafts locally.
             </p>
             <div className="mt-6 flex flex-wrap justify-center gap-3">
               <button

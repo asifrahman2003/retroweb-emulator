@@ -7,9 +7,9 @@ export default function HowToUseWindow() {
       <MacWindow title="How to Use" className="w-full">
         <div className="space-y-6 text-sm leading-relaxed font-mono" style={{ color: 'var(--text-main)' }}>
           <p>
-            Welcome to the <strong style={{ color: 'var(--heading-color)' }}>retroWeb Emulator instructions</strong>! This virtual machine lets you run
-            simple low-level programs using a custom instruction set. Programs load at address <code className="text-[var(--accent)]">0x0000</code>,
-            and the pixel framebuffer begins at <code className="text-[var(--accent)]">0x0400</code>. Here's how to get started:
+            <strong style={{ color: 'var(--heading-color)' }}>retroWeb Academy</strong> uses
+            a small VM with a custom instruction set. Programs load at address <code className="text-[var(--accent)]">0x0000</code>,
+            and the pixel framebuffer begins at <code className="text-[var(--accent)]">0x0400</code>.
           </p>
 
           {/* Steps to Get Started */}

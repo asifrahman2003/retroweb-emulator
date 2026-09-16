@@ -419,6 +419,17 @@ textarea:focus-visible {
   padding: 6px 10px;
 }
 
+button.rw-command-trigger {
+  justify-content: flex-start;
+  font-weight: 400;
+  text-align: left;
+}
+
+button.rw-command-trigger:hover {
+  border-color: var(--accent);
+  background: var(--panel);
+}
+
 .bar-chart {
   display: flex;
   align-items: flex-end;

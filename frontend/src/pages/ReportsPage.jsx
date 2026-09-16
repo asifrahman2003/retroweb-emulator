@@ -46,7 +46,7 @@ export default function ReportsPage({
           <div className="rw-eyebrow">Execution review</div>
           <h1 className="mt-1 text-3xl font-semibold text-[var(--heading-color)]">Reports</h1>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--text-muted)]">
-            Summarize the latest VM run with timeline, register snapshot, memory highlights, and export-ready sections.
+            Review the latest VM run: program counter, registers, memory cells, and runtime state.
           </p>
         </div>
         <button type="button" onClick={() => onNavigate('workspace')}>
@@ -176,10 +176,10 @@ export default function ReportsPage({
           <h2 className="font-semibold text-[var(--ink)]">Report sections</h2>
           <div className="mt-4 grid gap-3">
             {[
-              ['Trace download', 'instruction-by-instruction timeline', 'planned'],
+              ['Trace log', 'instruction-by-instruction history', 'planned'],
               ['State diff', 'before and after registers/memory', 'active'],
-              ['Rubric notes', 'challenge-specific feedback', 'planned'],
-              ['Export bundle', 'JSON/CSV/PDF for instructors', 'planned'],
+              ['Challenge notes', 'feedback for the selected lab', 'planned'],
+              ['Download report', 'JSON, CSV, or PDF output', 'planned'],
             ].map(([title, detail, status]) => (
               <div key={title} className="flex items-center justify-between gap-3 border-b border-[var(--line-2)] pb-3 last:border-b-0 last:pb-0">
                 <div>
@@ -195,7 +195,7 @@ export default function ReportsPage({
         <article className="rw-card p-5">
           <h2 className="font-semibold text-[var(--ink)]">Next action</h2>
           <p className="mt-3 text-sm leading-6 text-[var(--text-muted)]">
-            The report is most useful once a program has been stepped or run. Jump back to the workspace to produce a richer trace.
+            Run or step a program in the workspace to make this report more useful.
           </p>
           <button
             type="button"

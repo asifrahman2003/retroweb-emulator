@@ -183,7 +183,7 @@ export default function LearningPanel({
             </>
           ) : (
             <p className="mt-3 text-xs text-[var(--text-muted)]">
-              Save current editor contents to build a reusable lesson or challenge attempt library.
+              Save the current editor contents so you can open them again later.
             </p>
           )}
         </section>

@@ -11,7 +11,7 @@ export default function Footer() {
           <div className="flex items-center gap-2">
             <span className="brand-mark scale-90" />
             <span className="text-sm font-semibold" style={{ color: 'var(--heading-color)' }}>
-              retroWeb
+              retroWeb Academy
             </span>
           </div>
           <p className="text-xs" style={{ color: 'var(--text-muted)' }}>

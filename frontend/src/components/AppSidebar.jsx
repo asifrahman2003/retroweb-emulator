@@ -14,9 +14,9 @@ export default function AppSidebar({ sections, activeRoute, onNavigate }) {
       >
         <span className="brand-mark" />
         <span>
-          <span className="block text-sm font-semibold text-[var(--ink)]">retroWeb</span>
+          <span className="block text-sm font-semibold text-[var(--ink)]">retroWeb Academy</span>
           <span className="block font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--ink-3)]">
-            learner app
+            learn assembly
           </span>
         </span>
       </button>
@@ -61,10 +61,10 @@ export default function AppSidebar({ sections, activeRoute, onNavigate }) {
       ))}
 
       <div className="mt-auto hidden border-t pt-3 lg:block" style={{ borderColor: 'var(--line)' }}>
-        <div className="px-2 text-[11px] text-[var(--ink-3)]">signed in as</div>
+        <div className="px-2 text-[11px] text-[var(--ink-3)]">using</div>
         <div className="mt-2 flex items-center gap-2 px-2">
           <span className="h-6 w-6 rounded-full border bg-[var(--panel)]" style={{ borderColor: 'var(--line)' }} />
-          <span className="text-[12px] text-[var(--ink-2)]">local learner</span>
+          <span className="text-[12px] text-[var(--ink-2)]">local profile</span>
         </div>
       </div>
     </aside>

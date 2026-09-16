@@ -25,7 +25,7 @@ export default function ProgramsPage({ savedPrograms, examples, onOpenProgram, o
             Saved workspaces
           </h1>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--text-muted)]">
-            A project shelf for local drafts, starter templates, and reusable assembly snippets.
+            Local drafts, starter examples, and small assembly snippets.
           </p>
         </div>
         <span className="rw-chip rw-chip-accent">{savedPrograms.length} saved</span>
@@ -44,7 +44,7 @@ export default function ProgramsPage({ savedPrograms, examples, onOpenProgram, o
             Starter templates
           </div>
           <div className="mt-2 text-4xl font-semibold text-[var(--ink)]">{examples.length}</div>
-          <p className="mt-1 text-xs text-[var(--text-muted)]">ready to load into workspace</p>
+          <p className="mt-1 text-xs text-[var(--text-muted)]">examples you can load</p>
         </article>
         <article className="rw-card p-5">
           <div className="rw-eyebrow" style={{ color: 'var(--ink-3)' }}>
@@ -63,7 +63,7 @@ export default function ProgramsPage({ savedPrograms, examples, onOpenProgram, o
         <div className="flex flex-col gap-3 border-b border-[var(--line-2)] p-4 md:flex-row md:items-center md:justify-between">
           <div>
             <h2 className="font-semibold text-[var(--ink)]">Saved workspaces</h2>
-            <p className="text-sm text-[var(--text-muted)]">Open, audit, or use as a base for a lab attempt.</p>
+            <p className="text-sm text-[var(--text-muted)]">Open a saved draft or use it as a lab starting point.</p>
           </div>
           <div className="rw-search max-w-none md:max-w-[280px]">
             <span>Cmd+K</span>
@@ -148,9 +148,9 @@ export default function ProgramsPage({ savedPrograms, examples, onOpenProgram, o
               Versioning plan
             </div>
             <div className="mt-4 grid gap-3 text-sm text-[var(--text-muted)]">
-              <p>Autosave snapshots every run or step.</p>
-              <p>Compare drafts against starter templates.</p>
-              <p>Export .retro files once the format stabilizes.</p>
+              <p>Autosave snapshots after runs or steps.</p>
+              <p>Compare saved drafts with starter examples.</p>
+              <p>Export .retro files after the format is settled.</p>
             </div>
           </article>
           <article className="rw-card p-5">
@@ -160,7 +160,7 @@ export default function ProgramsPage({ savedPrograms, examples, onOpenProgram, o
             <div className="mt-4 grid gap-3">
               {[
                 ['Local drafts', savedPrograms.length ? 'active' : 'empty'],
-                ['Cloud sync', 'planned'],
+                ['Cloud backup', 'planned'],
                 ['GitHub gists', 'planned'],
               ].map(([label, status]) => (
                 <div key={label} className="flex items-center justify-between gap-3 text-sm">

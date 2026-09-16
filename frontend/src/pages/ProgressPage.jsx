@@ -44,10 +44,10 @@ export default function ProgressPage({ challenges, challengeProgress, completedC
     <div className="space-y-6">
       <header className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
-          <div className="rw-eyebrow">Analytics</div>
+          <div className="rw-eyebrow">Progress</div>
           <h1 className="mt-1 text-3xl font-semibold text-[var(--heading-color)]">Progress</h1>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--text-muted)]">
-            Learning analytics surface for completion, streaks, activity, and concept readiness.
+            Track completed labs and see which topics still need practice.
           </p>
         </div>
         <div className="rw-segment">
@@ -59,7 +59,7 @@ export default function ProgressPage({ challenges, challengeProgress, completedC
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <Metric label="Overall" value={`${completionRatio}%`} detail="across current labs" />
-        <Metric label="Streak" value="12d" detail="sample streak signal" accent />
+        <Metric label="Streak" value="12d" detail="sample local streak" accent />
         <Metric label="Solved" value={completedChallengesCount} detail={`${challenges.length} challenges`} />
         <Metric
           label="Remaining"

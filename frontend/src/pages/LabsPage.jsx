@@ -1,6 +1,6 @@
 const labShelves = [
-  ['Registers', 'Swap values, track arithmetic, inspect register state.'],
-  ['Memory', 'Move data through addresses and reason about side effects.'],
+  ['Registers', 'Swap values, run arithmetic, and inspect register state.'],
+  ['Memory', 'Move data through addresses and check side effects.'],
   ['Control flow', 'Loops, branches, and HALT conditions.'],
   ['Framebuffer', 'Pixel output and memory-mapped display practice.'],
 ];
@@ -16,7 +16,7 @@ export default function LabsPage({ challenges, challengeProgress, onLoadChalleng
           <div className="rw-eyebrow">Practice</div>
           <h1 className="mt-1 text-3xl font-semibold text-[var(--heading-color)]">Labs</h1>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--text-muted)]">
-            Challenge library with starter code, hints, and local validation against machine state.
+            Practice problems with starter code, hints, and checks against the VM state.
           </p>
         </div>
         <span className="rw-chip rw-chip-accent">
@@ -28,8 +28,8 @@ export default function LabsPage({ challenges, challengeProgress, onLoadChalleng
         <section className="rw-card-soft grid gap-6 p-5 xl:grid-cols-[1.15fr_0.85fr]" style={{ borderColor: 'var(--accent)' }}>
           <div>
             <div className="flex flex-wrap gap-2">
-              <span className="rw-chip rw-chip-accent">weekly challenge</span>
-              <span className="rw-chip">+100 xp</span>
+              <span className="rw-chip rw-chip-accent">next challenge</span>
+              <span className="rw-chip">practice</span>
               <span className="rw-chip">local validator</span>
             </div>
             <h2 className="mt-4 text-2xl font-semibold text-[var(--ink)]">{featured.title}</h2>
@@ -52,11 +52,11 @@ export default function LabsPage({ challenges, challengeProgress, onLoadChalleng
               >
                 Start challenge
               </button>
-              <button type="button">View rubric</button>
+              <button type="button">View checks</button>
             </div>
           </div>
           <div className="flex min-h-[190px] items-center justify-center rounded-[6px] border border-dashed border-[var(--ink-4)] bg-[var(--panel)] p-5 text-center font-mono text-[11px] uppercase tracking-[0.08em] text-[var(--ink-3)]">
-            framebuffer preview · test states · hidden checks
+            framebuffer preview / register checks / memory checks
           </div>
         </section>
       ) : null}

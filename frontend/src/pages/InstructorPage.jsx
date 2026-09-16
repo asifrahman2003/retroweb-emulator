@@ -21,7 +21,7 @@ export default function InstructorPage() {
           <div className="rw-eyebrow">Admin</div>
           <h1 className="mt-1 text-3xl font-semibold text-[var(--heading-color)]">Instructor view</h1>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--text-muted)]">
-            Cohort signal, learner triage, assignment review, and content operations in one teaching surface.
+            Sample classroom dashboard for labs, progress, assignments, and review.
           </p>
         </div>
         <div className="rw-segment">
@@ -35,9 +35,9 @@ export default function InstructorPage() {
       <section className="grid gap-4 md:grid-cols-3 xl:grid-cols-6">
         {[
           ['Learners', '42', '38 active'],
-          ['Median progress', '46%', 'on track'],
+          ['Median progress', '46%', 'sample data'],
           ['At risk', '6', 'no activity 7d+', 'err'],
-          ['Avg streak', '8d', 'cohort median'],
+          ['Avg streak', '8d', 'sample average'],
           ['Avg time', '6h', 'per week'],
           ['To grade', '14', 'submissions', 'accent'],
         ].map(([label, value, detail, tone]) => (
@@ -106,7 +106,7 @@ export default function InstructorPage() {
           <div className="flex flex-wrap gap-2">
             <div className="rw-search max-w-none md:max-w-[250px]">
               <span>Cmd+K</span>
-              <span>search cohort...</span>
+            <span>search class...</span>
             </div>
             <div className="rw-segment">
               <span className="on">All</span>

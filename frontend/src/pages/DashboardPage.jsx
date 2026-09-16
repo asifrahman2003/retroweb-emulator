@@ -47,7 +47,7 @@ export default function DashboardPage({
     : 0;
 
   const stats = [
-    ['Streak', '12 days', 'sample learner cadence', true],
+    ['Streak', '12 days', 'sample local streak', true],
     ['Lessons', `${totalExamples}`, 'guided examples ready', false],
     ['Labs', `${completedChallengesCount}/${totalChallenges}`, `${labPct}% complete`, false],
     ['Runtime', vmStatusLabel, 'WASM VM status', false],
@@ -62,7 +62,7 @@ export default function DashboardPage({
             Welcome back.
           </h1>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--text-muted)]">
-            Resume the next lesson, inspect recent work, or jump into the emulator workspace.
+            Continue a lesson, open a saved program, or jump back into the VM.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -95,7 +95,7 @@ export default function DashboardPage({
                 Retro Architecture · Track 01
               </h2>
               <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--text-muted)]">
-                Registers, memory, the instruction cycle, and the debugging habits that make low-level systems less mysterious.
+                Practice registers, memory, branches, and the habits used to debug small programs.
               </p>
             </div>
             <ProgressRing pct={labPct} />

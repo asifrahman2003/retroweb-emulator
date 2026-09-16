@@ -1,7 +1,7 @@
 # Project Overview & Goals
 
-## Project Title: RetroWeb Emulator
-RetroWeb Emulator is a web-based interactive emulator built from scratch, featuring a custom virtual machine (VM) and a MIPS-inspired assembly-like instruction set. It serves as an educational sandbox that makes low-level systems programming accessible in the browser, with a modern React frontend and WebAssembly backend.
+## Project Title: retroWeb Academy
+retroWeb Academy is a web-based learning app for assembly programming. It uses a custom virtual machine (VM), a MIPS-inspired assembly-like instruction set, browser-based lessons, and hands-on labs to make low-level programming easier to practice.
 
 ## Website link - [retroweb-emulator.vercel.app](https://retroweb-emulator.vercel.app/)
 
@@ -84,7 +84,7 @@ Tweak layout and orientation issues for mobile devices.
 
 ## Documentation & Playground:
 
-Add user-friendly docs to teach how to use the emulator and write instructions.
+Add user-friendly docs to teach how to use the VM and write instructions.
 
 Include an embedded tutorial mode or a list of challenges to try.
 
@@ -96,8 +96,8 @@ Compiled native C code to WebAssembly and connected it with a modern React front
 
 Made low-level computing concepts interactive, visual, and browser-based.
 
-Focused on education, experimentation, and systems design. 
+Focused on education, experimentation, and systems design.
 
 ## Developer
 
-Ⓒ Asifur Rahman. Licensed under MIT License. 
+Ⓒ Asifur Rahman. Licensed under MIT License.

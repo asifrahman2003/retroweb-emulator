@@ -43,13 +43,13 @@ export default function Navbar({ productName, activeRoute, links, onNavigate }) 
           <span className="brand-mark" />
           <span className="flex items-baseline gap-2">
             <span className="text-[15px] font-semibold" style={{ color: 'var(--navbar-title)' }}>
-              {productName.replace(' Academy', '')}
+              {productName}
             </span>
             <span
               className="hidden text-[10px] uppercase tracking-[0.12em] sm:inline"
               style={{ color: 'var(--text-subtle)' }}
             >
-              academy
+              learn assembly
             </span>
           </span>
         </button>

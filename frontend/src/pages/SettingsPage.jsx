@@ -44,7 +44,7 @@ export default function SettingsPage({ isAssembly, vmStatusLabel, savedProgramsC
               Profile & preferences
             </h1>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-[var(--text-muted)]">
-              Settings grouped by what learners feel: identity, workspace behavior, appearance, shortcuts, and future sync.
+              Basic profile, appearance, shortcuts, and local workspace settings.
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -68,12 +68,12 @@ export default function SettingsPage({ isAssembly, vmStatusLabel, savedProgramsC
               RW
             </span>
             <div className="min-w-0 flex-1">
-              <h2 className="text-xl font-semibold text-[var(--ink)]">Local learner</h2>
+              <h2 className="text-xl font-semibold text-[var(--ink)]">Local profile</h2>
               <p className="mt-1 text-sm text-[var(--text-muted)]">
                 Browser profile · {savedProgramsCount} saved programs · runtime {vmStatusLabel}
               </p>
               <div className="mt-3 flex flex-wrap gap-2">
-                <span className="rw-chip">learner</span>
+                <span className="rw-chip">local</span>
                 <span className="rw-chip rw-chip-accent">retro core</span>
                 <span className="rw-chip">{isAssembly ? 'assembly default' : 'raw bytes default'}</span>
               </div>
@@ -88,7 +88,7 @@ export default function SettingsPage({ isAssembly, vmStatusLabel, savedProgramsC
               </span>
               <input
                 className="mt-2 w-full rounded-[5px] border border-[var(--line)] bg-[var(--panel-soft)] px-3 py-2 text-sm text-[var(--ink)]"
-                defaultValue="Local learner"
+                defaultValue="Local profile"
               />
             </label>
             <label className="block">
@@ -175,7 +175,7 @@ export default function SettingsPage({ isAssembly, vmStatusLabel, savedProgramsC
               ['Step back', 'Cmd Left'],
               ['Reset', 'Cmd Shift R'],
               ['Toggle lesson drawer', 'Cmd B'],
-              ['Toggle assistant', 'Cmd /'],
+              ['Open help', 'Cmd /'],
               ['Jump to docs', 'Cmd K'],
             ].map(([action, shortcut]) => (
               <div key={action} className="flex items-center justify-between gap-4 px-4 py-3 text-sm">
@@ -191,7 +191,7 @@ export default function SettingsPage({ isAssembly, vmStatusLabel, savedProgramsC
         <section className="grid gap-5 xl:grid-cols-[1fr_1fr]">
           <article className="rw-card p-5">
             <div className="rw-eyebrow" style={{ color: 'var(--ink-3)' }}>
-              Configuration blueprint
+              Settings to add
             </div>
             <div className="mt-4 grid gap-3">
               {settingsBlueprint.map((group) => (
@@ -210,7 +210,7 @@ export default function SettingsPage({ isAssembly, vmStatusLabel, savedProgramsC
             <div className="mt-4 grid gap-3">
               {[
                 ['Local storage', 'active'],
-                ['Cloud sync', 'planned'],
+                ['Cloud backup', 'planned'],
                 ['Export data', 'planned'],
                 ['Delete account', 'disabled'],
               ].map(([label, status]) => (
